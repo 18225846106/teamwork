@@ -1,0 +1,55 @@
+/* 清除所有元素的脏边距 */
+*{
+	margin: 0;
+	padding: 0;
+}
+
+/* 项目信息展示面板外包 */
+.Project {
+	overflow: auto;
+	width: 80%;
+	height: 40%;
+	max-height: 300px;
+	border: 1px solid #dfdfdf;
+	margin: 5px;
+}
+
+/*  */
+.ProjectTable {
+	border: 1px solid #dfdfdf;
+	margin-bottom: 5px;
+}
+
+/* 组长背景色 */
+.GroupLeader {
+	background-color: #d0efd0cc;
+}
+
+/* 项目信息单条单个属性格样式修改 */
+.tbodytd td {
+	padding: 4px;
+}
+
+/* 项目任务信息展示面板外包 */
+.ProjectAssignment {
+	overflow: auto;
+	width: 80%;
+	height: 40%;
+	max-height: 300px;
+	border: 1px solid #CCC;
+	margin: 5px;
+}
+
+/* 任务表格边框 */
+.AssignmentTable {
+	border: 1px solid #dfdfdf;
+}
+
+/* 使进度球在div里 */
+.ProgressDiv {
+	height: 100px;
+	width: 100px;
+	margin: 0;
+	/* background-color: gainsboro; */
+	position: relative;
+}

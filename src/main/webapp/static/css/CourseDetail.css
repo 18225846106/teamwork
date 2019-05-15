@@ -1,0 +1,71 @@
+@charset "UTF-8";
+
+/* 学生信息展示面板外包 */
+.StudentList {
+	overflow: auto;
+	width: 100%;
+	height: 40%;
+	max-height: 300px;
+	border: 1px solid #dfdfdf;
+	margin: 5px;
+}
+
+/* 学生信息单条单个属性格样式修改 */
+.tbodytd td {
+	padding: 4px;
+}
+
+/* 班级学生分组信息展示面板外包 */
+.StudentGroup {
+	overflow: auto;
+	width: 100%;
+	height: 40%;
+	max-height: 300px;
+	border: 1px solid #CCC;
+	margin: 5px;
+}
+
+/* 每个分组的外包容器 */
+.TeamContainer {
+	display: flex;
+	border: 1px solid #CCC;
+	margin: 2px;
+	
+}
+
+/* 项目信息展示面板外包 */
+.ProjectList {
+	overflow: auto;
+	width: 100%;
+	height: 40%;
+	max-height: 300px;
+	border: 1px solid #CCC;
+	margin: 5px;
+}
+
+/* 每个项目信息 */
+ProjectContainer {
+	display: flex;
+	border: 1px solid #CCC;
+	margin: 2px;
+}
+
+/*  */
+.TeamDetails {
+	width: 48%;
+	max-width: 250px;
+}
+
+.GroupLeader {
+	background-color: #ffffdd;
+}
+
+/* 项目表格边框 */
+.ProjectTable {
+	border: 1px solid #dfdfdf;
+}
+
+/* 学生信息单条单个属性格样式修改 */
+.tbodytd td {
+	padding: 4px;
+}

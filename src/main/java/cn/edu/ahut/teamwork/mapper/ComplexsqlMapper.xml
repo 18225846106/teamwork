@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.edu.ahut.teamwork.dao.ComplexsqlMapper">
+	
+	<sql id="assignment">
+		id as assignmentid,`name` as assignmentname,projectid as projectid,studentid as studentid,
+		progress as progress,starttime as starttime,endtime as endtime,finishtime as finishtime, state as state
+	</sql>
+	
+	<!--  -->
+	<sql id="studentassignmentall">
+		assignmentid , assignmentname , projectid , studentid , progress , starttime , endtime , finishtime , state ,
+		 `name` as studentname , `password` as studentpassword , sfzh as studentsfzh , sex as studentsex , grade as studentgrade , classid as studentclassid , classname as studentclassname
+	</sql>
+	
+	<!--  -->
+	<sql id="studentassignment">
+		assignmentid , assignmentname , projectid , studentid , progress , starttime , endtime , finishtime , state ,
+		 `name` as studentname , sex as studentsex , grade as studentgrade , classid as studentclassid , classname as studentclassname
+	</sql>
+	
+	<!-- 查找学生信息，根据课程编号courseid从课程学生表coursestudent找到所有学生编号 -->
+	<select id="findStudentByCourseid" parameterType="String" resultType="Student">
+		select * 
+		from student 
+		<where>
+			id in (select studentid from course_student 
+				<where>
+					courseid = #{courseid}
+				</where>)
+		</where>
+	</select>
+	
+	<!-- 根据课程编号查找小组表Team和小组学生表Teamstudent的联合信息 -->
+	<select id="findTtsByCourseid" parameterType="String" resultType="Teamteamstudent">
+		SELECT t.id as teamid, t.name as teamname, ts.studentid as studentid, ts.`character` as `character` 
+		FROM team t ,team_student ts 
+		<where>
+			t.courseid = #{courseid} and t.id = ts.teamid
+		</where>
+		ORDER BY teamid ASC
+	</select>
+	
+	<!-- 在findTtsByCourseid基础上加商学生信息 -->
+	<select id="findTtssByCourseid" parameterType="String" resultType="Teamteamstudentstudent">
+		SELECT * FROM 
+			( SELECT t.id as teamid, t.name as teamname, ts.studentid as studentid, ts.`character` as `character` 
+			FROM team t ,team_student ts <where>t.courseid = #{courseid} AND t.id = ts.teamid </where> ) tts 
+			LEFT JOIN student s on tts.studentid = s.id
+		ORDER BY teamid ASC
+	</select>
+	
+	
+	<!-- 根据小组编号找到所有小组成员编号，找到成员的信息和小组信息的关联 -->
+	<select id="findStsByTeamid" parameterType="String" resultType="Studentteamstudent">
+		SELECT ts.teamid as teamid ,ts.studentid as studentid ,ts.courseid as courseid , ts.`character` as `character`,
+				s.name as studentname , s.sex as studentsex ,s.grade as studentgrade ,s.classid as studentclassid ,
+				s.classname as studentclassname 
+		FROM (SELECT * FROM team_student WHERE teamid = #{teamid}) ts 
+			LEFT JOIN student s
+		ON ts.studentid = s.id
+	</select>
+	
+	<!-- <select id="findStsByTeamid" parameterType="String" resultType="Studentteamstudent">
+		SELECT teamstudent.* , student.*
+		FROM (SELECT * FROM team_student WHERE teamid = #{teamid}) teamstudent 
+			LEFT JOIN student student
+		ON teamstudent.studentid = student.id
+	</select> -->
+	
+	<!-- 根据班级编号和学生编号查找该班级内的该学生的任务信息 -->
+	<!-- 参数由接口注解传入 -->
+	<select id="findAssignmentByCsid" resultType="Assignment">
+		SELECT * 
+		FROM ASSIGNMENT 
+		<where>
+			STUDENTID = #{studentid} 
+			AND PROJECTID IN 
+			(SELECT id FROM PROJECT <where> TID = ( SELECT TEAMID FROM TEAM_STUDENT <where> COURSEID = #{courseid} AND STUDENTID = #{studentid}</where> ) </where>)
+		</where>
+	</select>
+	
+	<!-- 学生表和任务表联合查询，通过项目id,条件是studentID相同 -->
+	<select id="findStudentAssignmentByProjectid" parameterType="String" resultType="Studentassignment">
+		SELECT <include refid="studentassignment"></include>
+		FROM 
+		(SELECT <include refid="assignment"></include> FROM assignment WHERE projectid = #{projectid}) a 
+		LEFT JOIN student s on s.id = a.studentid
+	</select>
+	
+</mapper>

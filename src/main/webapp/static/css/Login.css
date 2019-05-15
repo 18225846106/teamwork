@@ -1,0 +1,124 @@
+@charset "UTF-8";
+
+/* 清除所有元素的脏边距 */
+*{
+	margin: 0;
+	padding: 0;
+}
+	
+body {
+	color: #11449E;
+}
+
+/* 最外层容器 */
+.Container {
+	/* width: 100%;
+	margin: 0px auto;
+	margin-top: 20%; */
+	width: 100%;
+    margin: 0px auto;
+    display: flex;
+    justify-content: center;
+    margin-top: 200px;/* 加上头部样式后拆去 */
+}
+
+/* 登录窗口容器样式 */
+.Login-container {
+	margin: 0 auto;
+	width: 30%;
+	min-width: 300px;
+    max-width: 350px;
+    padding: 10px 10px 10px 20px;
+    max-width: 350px;
+    box-shadow: 2px 4px 6px #0b487d;
+    margin: 0px 20% 0px 35%;
+}
+
+/* 登录输入框样式 */
+.Login-input {
+	display: flex;
+	width: 100%;
+	padding: 5px 8px 5px 8px;
+	
+}
+.Login-input-right {
+	/* display: inline; */
+	/* width: 50px; */
+	display: flex;
+	align-items: center;
+	paddign-right: 5px;
+}
+.Login-input-center {
+	/* display: inline; */
+}
+.Login-input-left {
+	/* display: inline; */
+	display: flex;
+	align-items: center;
+	width: 70px;
+	padding-right: 5px;
+}
+
+/* 选择角色容器 */
+.Login-chose-job {
+	display: flex;
+	justify-content: space-around;
+	margin: 5px 0px 5px 0px;
+}
+.Login-chose-job-radio {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 40%;
+}
+
+/* 按钮容器 */
+.Login-button {
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+}
+.Login-button-left {
+	width: 50%;
+	display: flex;
+	justify-content: flex-end;
+	padding-right: 20px;
+}
+.Login-button-right {
+	width: 50%;
+	display: flex;
+	justify-content: flex-start;
+	padding-left: 20px;
+}
+.Login-button-login {
+	width: 90px;
+    min-width: 50px;
+    max-width: 60%;
+}
+
+/*  */
+.auto {
+	width: auto;
+}
+
+/* 头部容器样式 */
+.Header {
+	margin: 0px auto;
+	margin-bottom: 20px;
+	padding-right: 50px;
+	border:2px solid red;
+	padding-left: 50px;
+	background-color: aliceblue;
+}
+
+/* 登录重置按钮居中 */
+.Center-loginbutton {
+	display: flex;
+	justify-content: space-around;
+    align-items: center;
+}
+
+/* 登录按钮样式修饰 */
+/* .Login-button {
+	max-width: 25%;
+} */

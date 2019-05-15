@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc 
+		http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+	
+	<!-- 开启注解扫描 -->
+	<!-- <context:annotation-config/> -->
+	
+	<!-- springMvc 的配置文件 网站跳转逻辑的控制，配置 -->
+	<!-- <context:component-scan base-package="cn.edu.ahut.teamwork" use-default-filters="false">
+		只扫描控制器
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+	</context:component-scan> -->
+	<context:component-scan base-package="cn.edu.ahut.teamwork.controller"></context:component-scan>
+	
+	<!-- 处理器适配器 -->
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"></bean>
+	<!-- 处理器映射器 -->
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<!-- <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+					<property name="supportedMediaTypes">
+						<list>
+							<value>text/html; charset=UTF-8</value>
+							<value>appliation/json; charset=UTF-8</value>
+						</list>
+					</property>
+				</bean> -->
+				<!-- @ResponseBody json convert -->
+				<bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+					<property name="supportedMediaTypes">
+						<list>
+							<value>text/html; charset=UTF-8</value>
+							<value>text/json; charset=UTF-8</value>
+							<value>application/json; charset=UTF-8</value>
+						</list>
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 配置视图解析器 方便页面返回 -->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/jsp/"></property>
+		<property name="suffix" value=".jsp"></property>
+	</bean>
+	
+	<!-- 两个标准 -->
+	<!-- 将springmvc不能处理的请求交给Tomact -->
+	<mvc:default-servlet-handler/>
+	<!-- 支持springmvc的高级功能 JSR30校验 快捷的ajax请求 映射动态请求 …… -->
+	<mvc:annotation-driven/>
+	
+	
+	<!-- 配置拦截器interceptor -->
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/**"/>
+			
+			<!-- 放过样式和外部样式路由 -->
+			<mvc:exclude-mapping path="/jquery/**"/>
+			<mvc:exclude-mapping path="/static/**"/>
+			
+			<!-- 放过测试下的路由 -->
+			<mvc:exclude-mapping path="/testcontroller/**"/>
+			
+			<!-- 放过登录路由 -->
+			<mvc:exclude-mapping path="/jump/login"/>
+			<mvc:exclude-mapping path="/student/login"/>
+			<mvc:exclude-mapping path="/teacher/login"/>
+			
+			<!-- 测试时放过的路由 -->
+			<mvc:exclude-mapping path="/student/login1"/>
+			<mvc:exclude-mapping path="/course/**"/>
+			<!-- 放过测试页面 -->
+			<mvc:exclude-mapping path="/jsp/**"/>
+			<!-- <mvc:exclude-mapping path="/jump/studentmain"/> -->
+			<bean class="cn.edu.ahut.teamwork.interceptor.LoginInterceptor"></bean>
+		</mvc:interceptor>
+	</mvc:interceptors>
+	
+</beans>
