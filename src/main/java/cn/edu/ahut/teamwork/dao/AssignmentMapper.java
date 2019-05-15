@@ -13,6 +13,7 @@ public interface AssignmentMapper {
 	//根据任务id查找任务信息
 	Assignment findAssignmentByid(@Param("assignmentid") String assignmentid);
 	
+	//
     long countByExample(AssignmentExample example);
 
     int deleteByExample(AssignmentExample example);
