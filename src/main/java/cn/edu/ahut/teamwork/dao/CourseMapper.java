@@ -11,7 +11,10 @@ public interface CourseMapper {
 	List<Course> findByTeacherId(@Param("tid") String tid);
 	
 	//根据课程id查找课程
-	Course findGroupStateByCourseid(@Param("courseid") String courseid);
+	Course findCourseByCourseid(@Param("courseid") String courseid);
+	
+	//修改课程信息
+	int updateCourse(Course course);
 	
     long countByExample(CourseExample example);
 

@@ -10,6 +10,12 @@ public interface TeamMapper {
 	//根据班级id找到小组
 	List<Team> findTeamByCourseid(@Param("courseid") String courseid);
 	
+	//插入一个新的小组
+	int insertTeam(Team team);
+	
+	//根据课程id删除对应课程的分组
+	int deleteTeamByCourseid(@Param("courseid") String courseid);
+	
     long countByExample(TeamExample example);
 
     int deleteByExample(TeamExample example);
