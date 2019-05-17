@@ -1,0 +1,6 @@
+/applicationContext.xml
+/dispatcherServlet-servlet.xml
+/jdbc.properties
+/log4j.properties
+/mybatis-config.xml
+/mybatis-generator.xml

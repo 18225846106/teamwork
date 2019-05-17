@@ -228,7 +228,7 @@
 	</select>
 	
 	<!-- 根据课程编号查询班级 -->
-	<select id="findGroupStateByCourseid" parameterType="String" resultType="Course">
+	<select id="findCourseByCourseid" parameterType="String" resultType="Course">
 		SELECT * 
 		FROM course 
 		<where>
@@ -237,5 +237,34 @@
 			</if>
 		</where>
 	</select>
+	
+	<!-- 修改课程信息 -->
+	<update id="updateCourse" parameterType="Course">
+		update course 
+		<set>
+			<if test="id != null">
+				id = #{id},
+			</if>
+			<if test="code != null">
+				code = #{code},
+			</if>
+			<if test="name != null">
+				name = #{name},
+			</if>
+			<if test="tid != null">
+				tid = #{tid},
+			</if>
+			<if test="time != null">
+				time = #{time},
+			</if>
+			<if test="addr != null">
+				addr = #{addr},
+			</if>
+			<if test="group != null">
+				`group` = #{group},
+			</if>
+		</set>
+		where id = #{id}
+	</update>
 
 </mapper>

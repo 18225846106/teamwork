@@ -177,4 +177,19 @@
 		ORDER BY ID ASC
 	</select>
 	
+	<!-- 插入一个新的小组 -->
+	<insert id="insertTeam" parameterType="Team">
+		INSERT INTO TEAM
+		(ID,CODE,NAME,COURSEID)
+		VALUES(
+		#{id},#{code},#{name},#{courseid}
+		)
+	</insert>
+	
+	<!-- 根据课程id删除对应课程的分组 -->
+	<delete id="deleteTeamByCourseid" parameterType="String">
+		delete from team
+		where courseid = #{courseid}
+	</delete>
+	
 </mapper>
