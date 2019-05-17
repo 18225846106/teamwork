@@ -12,6 +12,9 @@
 <!-- 引入bootstrap页面样式 -->
 <link rel="stylesheet" href="<%=request.getContextPath()%>/static/bootstrap-3.3.7-dist/css/bootstrap.css" type="text/css">
 
+<!-- 引入bootstrap的js文件 -->
+<script type="text/javascript" src="<%=request.getContextPath()%>/static/bootstrap-3.3.7-dist/js/bootstrap.js"></script>
+
 <!-- 引入CourseTeam页面的css样式 -->
 <link rel="stylesheet" href="<%=request.getContextPath()%>/static/css/CourseTeam.css" type="text/css">
 
@@ -24,69 +27,20 @@
 <script type="text/javascript">
 	
 	var teamid = <%=request.getAttribute("teamid")%>;
+	
+	var sid = "";
 
 	$(function(){
 		var teamid = <%=request.getAttribute("teamid")%>;
 		
 		console.log("teamid:"+<%=request.getAttribute("teamid")%>);
 		
-		//查询小组成员信息
-		$.ajax({
-			type:"post",
-			dataType:"json",
-			data:{teamid:<%=request.getAttribute("teamid")%>},
-			url:"/teamwork/sts/findstsbyteamid",
-			success:function(data){
-				//
-				console.log("success:"+data);
-				//失败
-				if (data.code == "100") {
-					//
-				} 
-				//成功
-				else if(data.code == "200"){
-					//打印team
-					
-					//打印students
-					displaystudents(data.studentteamstudents);
-				}
-				//
-				else{
-					//
-				}
-			},
-			error:function(data){
-				console.log("error:"+data);
-			}
-		});
+		//第一步:查询小组成员信息
+		ajaxteamstudents(teamid);
 		
-		//查询小组内所有项目信息
-		$.ajax({
-			type:"post",
-			dataType:"json",
-			data:{teamid:<%=request.getAttribute("teamid")%>},
-			url:"/teamwork/project/findprojectbyteamid",
-			success:function(data){
-				//
-				console.log("success:"+data);
-				//
-				if (data.code == "100") {
-					//
-				} 
-				//
-				else if(data.code == "200"){
-					//画项目信息
-					displayprojects(data.projects);
-				}
-				//
-				else{
-					//
-				}
-			},
-			error:function(data){
-				console.log("error:"+data);
-			}
-		});
+		//第二步:查询小组内所有项目信息
+		ajaxteamprojects(teamid);
+		
 	});
 	
 	//小组信息
@@ -94,10 +48,65 @@
 		
 	}
 	
+	//第一步:查询小组成员信息
+	function ajaxteamstudents(teamid){
+		$.ajax({
+			type:"post",
+			dataType:"json",
+			data:{teamid:teamid},
+			url:"/teamwork/sts/findstsbyteamid",
+			success:function(data){
+				console.log("查询小组成员信息 success:"+data);
+				if (data.code == "100") {//失败
+					
+				} 
+				else if(data.code == "200"){//成功
+					//1打印team
+					//2打印students
+					displaystudents(data.studentteamstudents);
+				}
+				else{
+					//其他情况
+				}
+			},
+			error:function(data){
+				console.log("查询小组成员信息 error:"+data);
+			}
+		});
+	}
+	
+	//第二步:查询小组内所有项目信息
+	function ajaxteamprojects(teamid){
+		$.ajax({
+			type:"post",
+			dataType:"json",
+			data:{teamid:teamid},
+			url:"/teamwork/project/findprojectbyteamid",
+			success:function(data){
+				console.log("查询小组内所有项目信息 success:"+data);
+				if (data.code == "100") {//查询失败
+					//
+				} 
+				else if(data.code == "200"){//查询成功
+					//画项目信息
+					displayprojects(data.projects);
+				}
+				else{
+					//意外情况
+				}
+			},
+			error:function(data){
+				console.log("查询小组内所有项目信息 error:"+data);
+			}
+		});
+	}
+	
 	//成员信息
 	function displaystudents(data){
+		//调用该函数，先清空标签内的内容
+		$("#students_table").empty();
 		var stss = data;
-		//头
+		//表头
 		var thead = $("<thead></thead>").append(
 				$("<tr></tr>").append($("<th></th>").text("学号"))
 							.append($("<th></th>").text("姓名"))
@@ -163,19 +172,19 @@
 			//项目编号
 			var trid = $("<tr></tr>").append($("<td></td>").text("项目编号:")).append($("<td></td>").text(codetoolang(""+project.id+"")).attr({"style":"color: blue;","onclick":"toProjectAssignment('"+project.id+"')","title":project.id})).attr({"title":"项目内任务详情"});
 			//项目名称
-			var trname = $("<tr></tr>").append($("<td></td>").text("任务名称:")).append($("<td></td>").text(project.name));
+			var trname = $("<tr></tr>").append($("<td></td>").text("项目名称:")).append($("<td></td>").text(project.name));
 			//任务状态，状态不同，修改样式
 			if (project.state == 1) {
-				var trstate = $("<tr></tr>").append($("<td></td>").text("任务状态:")).append($("<td></td>").text("未开始"));
+				var trstate = $("<tr></tr>").append($("<td></td>").text("项目状态:")).append($("<td></td>").text("未开始"));
 			}
 			else if (project.state == 2) {
-				var trstate = $("<tr></tr>").append($("<td></td>").text("任务状态:")).append($("<td></td>").text("进行中").attr("style","color: #6cc6a2;"));
+				var trstate = $("<tr></tr>").append($("<td></td>").text("项目状态:")).append($("<td></td>").text("进行中").attr("style","color: #6cc6a2;"));
 			}
 			else if (project.state == 3) {
-				var trstate = $("<tr></tr>").append($("<td></td>").text("任务状态:")).append($("<td></td>").text("已完成").attr("style","color: #4bff37;"));
+				var trstate = $("<tr></tr>").append($("<td></td>").text("项目状态:")).append($("<td></td>").text("已完成").attr("style","color: #4bff37;"));
 			}
 			else if (project.state == 4) {
-				var trstate = $("<tr></tr>").append($("<td></td>").text("任务状态:")).append($("<td></td>").text("逾期").attr("style","color: #ff1717;"));
+				var trstate = $("<tr></tr>").append($("<td></td>").text("项目状态:")).append($("<td></td>").text("逾期").attr("style","color: #ff1717;"));
 			}
 			//任务开始时间
 			var trstarttime = $("<tr></tr>").append($("<td></td>").text("开始时间:")).append($("<td></td>").text(getdate(project.starttime)));
@@ -261,9 +270,43 @@
 	
 	//指定学生角色模态框
 	function allotcharactermodal(studentid){
-		alert("指定学生担任角色 "+studentid+" teamid:"+teamid);
-		$('#AllotCharacterModal').modal({
+		//consloe.log("指定学生担任角色 "+studentid+" teamid:"+teamid);
+		//指定全局变量学生id
+		sid = studentid;
+		$("#AllotCharacterModal").modal({
 			backdrop: 'static'
+		});
+	}
+	
+	//修改角色选择框中的内容
+	function chosecharacter(){
+		$("#allotcharacterchose").val($("#allotcharacters").find("option:selected").text());
+	}
+	
+	//修改角色
+	function allotcharacter(){
+		var character = $("#allotcharacters").val();
+		alert("sid "+sid+" tid "+teamid+" chose "+character);
+		$.ajax({
+			type:"post",
+			dataType:"json",
+			data:{teamid:teamid,studentid:sid,character:character},
+			url:"/teamwork/teamstudent/updateteamstudent",
+			success:function(data){
+				if (data.code == "100") {
+					//修改失败
+					console.log(data.info);
+				}
+				if (data.code == "200"){
+					//成功修改
+					console.log(data.info);
+				}
+				//回显小组,刷新小组
+				ajaxteamstudents(teamid);
+			},
+			error:function(data){
+				
+			}
 		});
 	}
 	
@@ -347,7 +390,7 @@
 							        <tr>
 							            <td align="left">
 							                <span style="position:absolute;border:1pt solid #c1c1c1;overflow:hidden;width:188px;height:19px;clip:rect(-1px 190px 190px 170px);">
-							                    <select name="allotcharacters" id="allotcharacters" style="width:190px;height:20px;margin:-2px;" onchange="choseteam();">
+							                    <select name="allotcharacters" id="allotcharacters" style="width:190px;height:20px;margin:-2px;" onchange="chosecharacter();">
 								                    <option value="" style="color:#c2c2c2;">---请选择---</option>
 								                    <!-- 两种角色填充 -->
 								                    <option value="1">组长</option>
