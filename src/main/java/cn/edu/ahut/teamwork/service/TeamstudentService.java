@@ -35,12 +35,32 @@ public class TeamstudentService {
 	}
 	
 	/**
+	 * 修改teamstudent
+	 * @param teamstudent
+	 * @return
+	 */
+	public int updateTeamstudent(Teamstudent teamstudent) {
+		int result = teamstudentMapper.updateTeamstudent(teamstudent);
+		return result;
+	}
+	
+	/**
 	 * 根据课程id删除小组学生
 	 * @param courseid
 	 * @return
 	 */
 	public int deleteTeamstudentByCourseid(String courseid) {
 		int result = teamstudentMapper.deleteTeamstudentByCourseid(courseid);
+		return result;
+	}
+	
+	/**
+	 * 删除teamstudent
+	 * @param teamstudent
+	 * @return
+	 */
+	public int deleteTeamstudent(Teamstudent teamstudent) {
+		int result = teamstudentMapper.deleteTeamstudent(teamstudent);
 		return result;
 	}
 }

@@ -13,8 +13,14 @@ public interface TeamstudentMapper {
 	//插入新的小组学生表
 	int insertTeamstudent(Teamstudent teamstudent);
 	
+	//修改teamstudent
+	int updateTeamstudent(Teamstudent teamstudent);
+	
 	//根据课程id删除小组学生
 	int deleteTeamstudentByCourseid(@Param("courseid") String courseid);
+	
+	//删除teamstudent
+	int deleteTeamstudent(Teamstudent teamstudent);
 	
     long countByExample(TeamstudentExample example);
 

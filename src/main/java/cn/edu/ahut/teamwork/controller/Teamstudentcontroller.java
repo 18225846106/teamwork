@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.fasterxml.jackson.annotation.JsonInclude.Value;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
@@ -101,6 +100,128 @@ public class Teamstudentcontroller {
 					map.put("code", "100");
 					map.put("info", "查询结果为空!");
 				}
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return map;
+	}
+	
+	/**
+	 * 更新teamstudent表信息
+	 * @param teamid
+	 * @param studentid
+	 * @param courseid
+	 * @param character
+	 * @param request
+	 * @param response
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value="/updateteamstudent")
+	@ResponseBody
+	public Map<String, Object> updateTeamstudent(
+			@RequestParam(value="teamid",defaultValue="") String teamid,
+			@RequestParam(value="studentid",defaultValue="") String studentid,
+			@RequestParam(value="courseid",defaultValue="") String courseid,
+			@RequestParam(value="character",defaultValue="") String character,
+			HttpServletRequest request,HttpServletResponse response,Model model){
+		Map<String, Object> map = new HashMap<String, Object>();
+		try {
+			String info = "";
+			Teamstudent teamstudent = new Teamstudent();
+			if (teamid == null || teamid.equals("")) {
+				info = info + " 未传入teamid!";
+			}else {
+				teamstudent.setTeamid(teamid);
+			}
+			if (studentid == null || studentid.equals("")) {
+				info = info + " 未传入studentid!";
+			} else {
+				teamstudent.setStudentid(studentid);
+			}
+			if (courseid == null || courseid.equals("")) {
+				info = info + " 未传入courseid!";
+			} else {
+				teamstudent.setCourseid(courseid);
+			}
+			if (character == null || character.equals("")) {
+				info = info + " 未传入character!";
+			} else {
+				teamstudent.setCharacter(character);
+			}
+			int result = teamstudentService.updateTeamstudent(teamstudent);
+			if (result > 0) {
+				map.put("code", "200");
+				map.put("info", info + " 更新成功!");
+				map.put("result", result);
+			}
+			else {
+				map.put("code", "100");
+				map.put("info", info + " 更新失败!");
+				map.put("result", result);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return map;
+	}
+	
+	/**
+	 * 删除teamstudent信息
+	 * @param teamid
+	 * @param studentid
+	 * @param courseid
+	 * @param character
+	 * @param request
+	 * @param response
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value="/deleteteamstudent")
+	@ResponseBody
+	public Map<String, Object> deleteTeamstudent(
+			@RequestParam(value="teamid",defaultValue="") String teamid,
+			@RequestParam(value="studentid",defaultValue="") String studentid,
+			@RequestParam(value="courseid",defaultValue="") String courseid,
+			@RequestParam(value="character",defaultValue="") String character,
+			HttpServletRequest request,HttpServletResponse response,Model model){
+		Map<String, Object> map = new HashMap<String, Object>();
+		try {
+			String info = "";
+			Teamstudent teamstudent = new Teamstudent();
+			if (teamid == null || teamid.equals("")) {
+				info = info + " 未传入teamid!";
+			}else {
+				teamstudent.setTeamid(teamid);
+			}
+			if (studentid == null || studentid.equals("")) {
+				info = info + " 未传入studentid!";
+			} else {
+				teamstudent.setStudentid(studentid);
+			}
+			if (courseid == null || courseid.equals("")) {
+				info = info + " 未传入courseid!";
+			} else {
+				teamstudent.setCourseid(courseid);
+			}
+			if (character == null || character.equals("")) {
+				info = info + " 未传入character!";
+			} else {
+				teamstudent.setCharacter(character);
+			}
+			int result = teamstudentService.deleteTeamstudent(teamstudent);
+			if (result > 0) {
+				map.put("code", "200");
+				map.put("info", info+" 删除成功!");
+				map.put("result", result);
+			}
+			else {
+				map.put("code", "100");
+				map.put("info", info + " 删除失败!");
+				map.put("result", result);
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
