@@ -192,4 +192,19 @@
 		order by teamid asc, studentid asc, `character` desc
 	</select>
 	
+	<!-- 插入新的小组学生表 -->
+	<insert id="insertTeamstudent" parameterType="Teamstudent">
+		INSERT INTO team_student 
+		(TEAMID,STUDENTID,COURSEID,`CHARACTER`)
+		VALUES (
+		#{teamid},#{studentid},#{courseid},#{character}
+		)
+	</insert>
+	
+	<!-- 根据课程id删除小组学生 -->
+	<delete id="deleteTeamstudentByCourseid" parameterType="String">
+		delete from team_student 
+		where courseid = #{courseid}
+	</delete>
+	
 </mapper>

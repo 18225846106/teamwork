@@ -7,6 +7,8 @@ package cn.edu.ahut.teamwork.entity;
  */
 public class Course {
     private String id;//课程id
+    
+    private String code;//课程编号
 
     private String name;//课程名称
 
@@ -26,7 +28,15 @@ public class Course {
         this.id = id == null ? null : id.trim();
     }
 
-    public String getName() {
+    public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public String getName() {
         return name;
     }
 
@@ -68,7 +78,7 @@ public class Course {
 
 	@Override
 	public String toString() {
-		return "Course [id=" + id + ", name=" + name + ", tid=" + tid + ", time=" + time + ", addr=" + addr + ", group="
-				+ group + "]";
+		return "Course [id=" + id + ", code=" + code + ", name=" + name + ", tid=" + tid + ", time=" + time + ", addr="
+				+ addr + ", group=" + group + "]";
 	}
 }

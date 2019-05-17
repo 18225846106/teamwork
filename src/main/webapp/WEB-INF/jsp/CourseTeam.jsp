@@ -133,6 +133,9 @@
 			else if (sts.character == 2) {
 				tr.append($("<td></td>").text("组员"));
 			}
+			else if (sts.character == null) {
+				tr.append($("<td></td>").text("指定"));
+			}
 			//tr.append($("<td></td>").text(sts.character));
 			//加入操作
 			tr.append($("<td></td>")

@@ -67,12 +67,12 @@ public class JumpController {
 	@RequestMapping(value="/coursedetail")
 	public String CourseDetail(
 			@Param(value="courseid") String courseid,
-			@Param(value="group") String group,
+//			@Param(value="group") String group,
 			HttpServletRequest request,HttpServletResponse response){
 		try {
 			System.out.println("打印传来的courseid："+courseid);
 			request.setAttribute("courseid", courseid);
-			request.setAttribute("group", group);
+//			request.setAttribute("group", group);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();

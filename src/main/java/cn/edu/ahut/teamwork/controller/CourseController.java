@@ -108,21 +108,34 @@ public class CourseController {
 	}
 	
 	/**
-	 * 
+	 * 通过课程id查找课程
 	 * @param courseid
 	 * @param request
 	 * @param response
 	 * @param model
 	 * @return
 	 */
-	@RequestMapping(value="findgroupstatebycourseid")
+	@RequestMapping(value="/findcoursebycourseid")
 	@ResponseBody
-	public Map<String, Object> findGroupStateByCourseid(
-			@Param(value="courseid") String courseid,
+	public Map<String, Object> findCourseByCourseid(
+			@RequestParam(value="courseid",defaultValue="") String courseid,
 			HttpServletRequest request,HttpServletResponse response,Model model){
 		Map<String, Object> map = new HashMap<String, Object>();
 		try {
-			//不知道要这个干嘛
+			if (courseid == null || courseid.equals("")) {
+				map.put("code", "100");
+				map.put("info", "此课程编号丢失!");
+			}else {
+				Course course = courseService.findCourseByCourseid(courseid);
+				if (course == null) {
+					map.put("code", "100");
+					map.put("info", "查询失败!");
+				}else {
+					map.put("code", "200");
+					map.put("info", "查询成功!");
+					map.put("course", course);
+				}
+			}
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
