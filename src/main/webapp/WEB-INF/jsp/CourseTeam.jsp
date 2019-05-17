@@ -22,6 +22,9 @@
 <script type="text/javascript" src="<%=request.getContextPath()%>/static/js/util.js"></script>
 
 <script type="text/javascript">
+	
+	var teamid = <%=request.getAttribute("teamid")%>;
+
 	$(function(){
 		var teamid = <%=request.getAttribute("teamid")%>;
 		
@@ -134,7 +137,7 @@
 				tr.append($("<td></td>").text("组员"));
 			}
 			else if (sts.character == null) {
-				tr.append($("<td></td>").text("指定"));
+				tr.append($("<td></td>").text("指定").attr({"style":"color: blue;","onclick":"allotcharactermodal('"+sts.studentid+"')"}));
 			}
 			//tr.append($("<td></td>").text(sts.character));
 			//加入操作
@@ -256,6 +259,14 @@
 		return tr;
 	}
 	
+	//指定学生角色模态框
+	function allotcharactermodal(studentid){
+		alert("指定学生担任角色 "+studentid+" teamid:"+teamid);
+		$('#AllotCharacterModal').modal({
+			backdrop: 'static'
+		});
+	}
+	
 	//从时间戳获取时间
 /* 	function getdate(data) {
 		var now = new Date(data),
@@ -314,6 +325,51 @@
 					<!-- 项目列表体 -->
 					<!-- <table id="projects_table" class="table table-hover">
 					</table> -->
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- Modal -->
+	<div class="modal fade" id="AllotCharacterModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" id="myModalLabel">指定角色</h4>
+				</div>
+				<div class="modal-body">
+					<div style="display: flex;width: 100%;">
+						<div style="width: 4em;padding-right: 10px;"><label>角色:</label></div>
+						<div>
+							<span style="absolute;margin-top:-12px;">
+							    <table cellspacing="0" cellpadding="0" width="100%" border="0">
+							        <tr>
+							            <td align="left">
+							                <span style="position:absolute;border:1pt solid #c1c1c1;overflow:hidden;width:188px;height:19px;clip:rect(-1px 190px 190px 170px);">
+							                    <select name="allotcharacters" id="allotcharacters" style="width:190px;height:20px;margin:-2px;" onchange="choseteam();">
+								                    <option value="" style="color:#c2c2c2;">---请选择---</option>
+								                    <!-- 两种角色填充 -->
+								                    <option value="1">组长</option>
+								                    <option value="2">组员</option>
+							                    </select>
+							                </span>
+							                <span style="position:absolute;border-top:1pt solid #c1c1c1;border-left:1pt solid #c1c1c1;border-bottom:1pt solid #c1c1c1;width:170px;height:19px;">
+							                    <input type="text" name="allotcharacterchose" id="allotcharacterchose" placeholder="可选择也可输入的下拉框" value="" style="width:170px;height:15px;border:0pt;">
+							                </span>
+							            </td>
+							            <td>
+							            	<label id="allotcharacterremind"></label>
+							            </td>
+							        </tr>
+							    </table>
+							</span>	
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					<button type="button" id="allotcharacter" class="btn btn-primary" onclick="allotcharacter();">确定</button>
 				</div>
 			</div>
 		</div>

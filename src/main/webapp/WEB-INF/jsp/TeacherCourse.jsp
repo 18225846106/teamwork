@@ -25,7 +25,7 @@
 	function coursedetail(courseid,group) {
 		alert("coursedetail:"+courseid+" ;group:"+group);
 		//点击查看按钮，跳转到查看该班级学生和分组页面
-		window.location.href="/teamwork/jump/coursedetail?courseid='"+courseid+"'&group="+group;
+		window.location.href="/teamwork/jump/coursedetail?courseid='"+courseid+"'";//&group="+group;
 	}
 	
 	//test
