@@ -23,4 +23,24 @@ public class TeamService {
 		List<Team> teams = teamMapper.findTeamByCourseid(courseid);
 		return teams;
 	}
+	
+	/**
+	 * 插入一个新的小组
+	 * @param team
+	 * @return
+	 */
+	public int insertTeam(Team team) {
+		int result = teamMapper.insertTeam(team);
+		return result;
+	}
+	
+	/**
+	 * 根据课程id删除对应课程的分组
+	 * @param courseid
+	 * @return
+	 */
+	public int deleteTeamByCourseid(String courseid) {
+		int result = teamMapper.deleteTeamByCourseid(courseid);
+		return result;
+	}
 }

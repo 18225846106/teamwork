@@ -23,4 +23,24 @@ public class TeamstudentService {
 		List<Teamstudent> teamstudents = teamstudentMapper.findByCourseid(courseid);
 		return teamstudents;
 	}
+	
+	/**
+	 * 插入新的小组学生表
+	 * @param teamstudent
+	 * @return
+	 */
+	public int insertTeamstudent(Teamstudent teamstudent) {
+		int result = teamstudentMapper.insertTeamstudent(teamstudent);
+		return result;
+	}
+	
+	/**
+	 * 根据课程id删除小组学生
+	 * @param courseid
+	 * @return
+	 */
+	public int deleteTeamstudentByCourseid(String courseid) {
+		int result = teamstudentMapper.deleteTeamstudentByCourseid(courseid);
+		return result;
+	}
 }

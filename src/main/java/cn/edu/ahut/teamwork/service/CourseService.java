@@ -34,8 +34,18 @@ public class CourseService {
 	 * @param courseid
 	 * @return
 	 */
-	public Course findGroupStateByCourseid(String courseid) {
-		Course course = courseMapper.findGroupStateByCourseid(courseid);
+	public Course findCourseByCourseid(String courseid) {
+		Course course = courseMapper.findCourseByCourseid(courseid);
 		return course;
+	}
+	
+	/**
+	 * 修改课程信息
+	 * @param course
+	 * @return
+	 */
+	public int updateCourse(Course course) {
+		int result = courseMapper.updateCourse(course);
+		return result;
 	}
 }
