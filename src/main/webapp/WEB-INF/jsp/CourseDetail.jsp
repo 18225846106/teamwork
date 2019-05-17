@@ -26,26 +26,21 @@
 <script type="text/javascript">
 	//全页变量courseid
 	var courseid = <%=request.getAttribute("courseid")%>;
-	var pid;
+	var pid;//全页通用模态框使用项目id
 	//页面加载完成后，发送ajax请求，得到分页数据
 	$(function(){
 		//班级的id
 		var courseid = <%=request.getAttribute("courseid")%>;
-		//班级的分组情况(1:没分组;2:分组了;3:以前分过组;)
-		var group = <%=request.getAttribute("group")%>;
-		
 		console.log("courseid:"+<%=request.getAttribute("courseid")%>+" "+courseid+" "+typeof(courseid));
-		console.log("group:"+<%=request.getAttribute("group")%>+" "+group+" "+typeof(group));
 		
 		//默认加载第一页
 		var pagenum = 1;
-		//填充班级学生的信息到学生信息面板
+		//第一步：填充班级学生的信息到学生信息面板
 		ajaxstudents(courseid,pagenum);
-		//填充分组信息到学生分组信息面板
-		ajaxgroup(courseid,group);
-		//填充班级项目信息
+		//第二步：填充分组信息到学生分组信息面板courseid,group
+		ajaxcourse(courseid);
+		//第三步：填充班级项目信息
 		ajaxproject(courseid);
-		
 	});
 	
 	//ajax查询学生信息
@@ -70,42 +65,67 @@
 		});
 	}
 	
-	//填充分组信息到学生分组信息面板
-	function ajaxgroup(courseid,group){
-		//当班级分组
-		if (group == 2) {
-			//分组
-			$.ajax({
-				type:"post",
-				dataType:"json",
-				data:{courseid:courseid},
-				url:"/teamwork/tts/findttsbycourseid",
-				success:function(data){
-					//请求接入成功
-					console.log("success"+data);
-					if (data.code == "200") {
-						//请求接入并成功取得数据
-						console.log("code:200;"+"info:"+data.info);
-						//显示小组,画页面效果
-						displayteam(data.tts);
+	//ajax查询班级是否分组//班级的分组情况(1:没分组;2:分组了;3:以前分过组;)
+	function ajaxcourse(courseid){
+		console.log("ajax查询班级是否分组");
+		$.ajax({
+			type:"post",
+			dataType:"json",
+			data:{courseid:courseid},
+			url:"/teamwork/course/findcoursebycourseid",
+			success:function(data){
+				//成功接入接口
+				if (data.code == "200") {//返回有效信息
+					if (data.course.group == 2) {//是分组的班级
+						//1隐藏分组按钮
+						console.log("1隐藏分组按钮");
+						$("#newteams button").hide();
+						//2调用展示分组的面板
+						ajaxgroup(courseid);
 					}
-					if (data.code == "100") {
-						//请求接入但未取得数据
-						console.log("infomation:"+data.info);
+					if (data.course.group == 1) {//未分组的班级
+						//显示分组按钮
+						console.log("显示分组按钮");
+						$("#newteams button").show();
 					}
-				},
-				error:function(data){
-					console.log("error:"+data);
 				}
-			});
-		} 
-		//情况:当班级曾经分组
-		else if(group == 3){
-		}
-		//情况:当班级未分组
-		else {
-			displayallotteam();
-		}
+				if (data.code == "100") {//返回无效信息
+					console.log("ajax查询班级是否分组:code=100");
+				}
+			},
+			error:function(data){
+				console.log("error"+data);
+			}
+		});
+	}
+	
+	//填充分组信息到学生分组信息面板courseid,group
+	function ajaxgroup(courseid){
+		console.log("填充分组信息到学生分组信息面板 ajaxgroup courseid "+courseid);
+		//分组
+		$.ajax({
+			type:"post",
+			dataType:"json",
+			data:{courseid:courseid},
+			url:"/teamwork/tts/findttsbycourseid",
+			success:function(data){
+				//请求接入成功
+				console.log("填充分组信息到学生分组信息面板 ajaxgroup success"+data);
+				if (data.code == "200") {
+					//请求接入并成功取得数据
+					console.log("code:200;"+"info:"+data.info);
+					//显示小组,画页面效果
+					displayteam(data.tts);
+				}
+				if (data.code == "100") {
+					//请求接入但未取得数据
+					console.log("infomation:"+data.info);
+				}
+			},
+			error:function(data){
+				console.log("填充分组信息到学生分组信息面板 ajaxgroup error:"+data);
+			}
+		});
 	}
 	
 	//班级内项目信息
@@ -157,6 +177,10 @@
 	
 	//画小组信息面板
 	function displayteam(data) {
+		console.log("画小组信息面板 displayteam ");
+		//调用前清空标签内的内容
+		$("#TeamContainer").empty();
+		
 		var ttss = data;
 		var table = $("<table></table>").addClass("table table-hover");
 		var thead = $("<thead></thead>").append(
@@ -179,9 +203,13 @@
 				tr.addClass("GroupLeader");
 			}
 			//组号
-			tr.append($("<td></td>").text(tts.teamid).attr({title:"点击查看小组信息",style:"color: blue;",onclick:"toCourseTeam('"+tts.teamid+"')"}));
+			tr.append($("<td></td>").text(codetoolang(tts.teamid)).attr({title:"点击查看小组信息"+tts.teamid,style:"color: blue;",onclick:"toCourseTeam('"+tts.teamid+"')"}));
 			//组名
-			tr.append($("<td></td>").text(tts.teamname));
+			if (tts.teamname == null) {
+				tr.append($("<td></td>").text("暂未起名"));
+			}else{
+				tr.append($("<td></td>").text(tts.teamname));
+			}
 			//学号
 			tr.append($("<td></td>").text(tts.studentid));
 			//角色
@@ -190,6 +218,8 @@
 			}
 			else if (tts.character == 2) {
 				tr.append($("<td></td>").text("组员"));
+			}else if (tts.character == null) {
+				tr.append($("<td></td>").text("暂未指定"));
 			}
 			//操作
 			tr.append($("<td></td>")
@@ -203,10 +233,6 @@
 	}
 
 	//画班级项目信息
-	/* function displayproject(data) {
-		var projects = data;
-		console.log("projects:"+projects+typeof(projects));
-	} */
 	//画项目信息
 	function displayproject(data) {
 		var projects = data;
@@ -270,14 +296,14 @@
 						.append($("<td></td>").text("分配到小组编号:"+codetoolang(project.tid)))
 						.append($("<td></td>")
 								.append($("<button></button>").attr({"type":"button","data-toggle":"modal","data-target":"#EditProjectModal","style":"padding: 2px;font-size: 1em;","onclick":"editProject('"+project.id+"');"}).addClass("btn btn-default btn-lg").text("编辑项目"))
-								.append($("<button></button>").attr({"type":"button","style":"padding: 2px;font-size: 1em;","onclick":"delectProject('"+project.id+"','"+project.name+"');"}).addClass("btn btn-default").text("删除项目")))
+								.append($("<button></button>").attr({"type":"button","style":"padding: 2px;font-size: 1em;","onclick":"deleteProject('"+project.id+"','"+project.name+"');"}).addClass("btn btn-default").text("删除项目")))
 				tbody.append(trbut);
 			}else {//当项目没有分配到组//给出按钮，弹出模态框
 				var trbut = $("<tr></tr>")
 						.append($("<td></td>").append($("<button></button>").attr({"type":"button","data-toggle":"modal","data-target":"#AllotProjectModal","style":"padding: 2px;font-size: 1em;","onclick":"getteam('"+project.id+"');"}).addClass("btn btn-default btn-lg").text("分配项目")))
 						.append($("<td></td>")
 								.append($("<button></button>").attr({"type":"button","data-toggle":"modal","data-target":"#EditProjectModal","style":"padding: 2px;font-size: 1em;","onclick":"editProject('"+project.id+"');"}).addClass("btn btn-default btn-lg").text("编辑项目"))
-								.append($("<button></button>").attr({"type":"button","style":"padding: 2px;font-size: 1em;","onclick":"delectProject('"+project.id+"','"+project.name+"');"}).addClass("btn btn-default").text("删除项目")))
+								.append($("<button></button>").attr({"type":"button","style":"padding: 2px;font-size: 1em;","onclick":"deleteProject('"+project.id+"','"+project.name+"');"}).addClass("btn btn-default").text("删除项目")))
 				tbody.append(trbut);
 			}
 			//将tbody加入到表格
@@ -312,14 +338,6 @@
 		return tr;
 	}
 	
-	//未分组时画页面
-	function displayallotteam(){
-		$("#newteams").append($("<button></button>").addClass("btn btn-default").attr({"type":"button","style":"padding: 1px 2px;font-size: 1em;","onclick":"newteam('"+courseid+"');"}).text("创建分组"));
-		/* <button type="button" class="btn btn-default btn-lg" style="padding: 1px;font-size: 1em;" data-toggle="modal" data-target="#CreattProjectModal">
-			创建分组
-		</button> */
-	}
-	
 	//小组信息页面
 	function toCourseTeam(teamid) {
 		//alert(teamid+typeof(teamid));
@@ -340,26 +358,8 @@
 		window.location.href="/teamwork/jump/projectassignment?projectid='"+projectid+"'";
 	}
 	
-	//从时间戳获取时间
-/* 	function getdate(data) {
-		var now = new Date(data),
-		y = now.getFullYear(),
-		m = ("0" + (now.getMonth() + 1)).slice(-2),
-		d = ("0" + now.getDate()).slice(-2);
-		return y + "-" + m + "-" + d + " " + now.toTimeString().substr(0, 8);
-	} */
-	
-	//解决编号过长
-/* 	function codetoolang(data) {
-		console.log("codetoolang");
-		var code = data;
-		if (code.length >= 5) {
-			code = code.substr(0,5)+"...";
-		}
-		return code;
-	} */
-	
-	function delectProject(projectid){
+	//删除项目(弃用)
+	function deleteProject(projectid){
 		console.log(this);
 		/* $.ajax({
 			type:"post",
@@ -375,6 +375,7 @@
 		}); */
 	}
 	
+	//编辑项目
 	function editProject(projectid){
 		console.log(this);
 		$.ajax({
@@ -399,7 +400,7 @@
 		});
 	}
 	
-	//修改指派框内的内容
+	//修改指派模态框内输入框和下拉选项选择的内容一致
 	function choseteam() {
 		var chosed = $("#allotteams").find("option:selected").text();//.val();
 		console.log("chosed:"+chosed);
@@ -424,7 +425,7 @@
 					console.log(data.info);
 					//填充选项
 					$.each(data.teams,function(index,team){
-						//<option value="闲人书库">闲人书库</option>
+						//<option value="team.id">team.name</option>
 						$("#allotteams").append($("<option></option>").attr({"value":team.id}).text(team.name));
 					});
 				}
@@ -469,7 +470,7 @@
 	}
 	
 	//删除项目
-	function delectProject(projectid,projectname){
+	function deleteProject(projectid,projectname){
 		var del = confirm("确定删除"+projectname+"项目吗!");
 		if (del) {//点击确定
 			console.log("删除"+projectid+" "+projectname+" 项目!");
@@ -500,10 +501,34 @@
 		}
 	}
 	
-	//创建分组，回显到页面
-	function newteam(courseid){
+	//创建分组，回显到页面,count是每个小组的人数
+	function newteam(){
 		//
-		console.log("newteam");
+		console.log("创建分组，回显到页面,count是每个小组的人数 newteam");
+		//
+		var count=prompt("请输入每个小组的人数","");
+		console.log(count+"  "+typeof(count));
+		
+		//向分组的接口发送分组请求
+		$.ajax({
+			type:"post",
+			dataType:"json",
+			data:{courseid:courseid,count:count},
+			url:"/teamwork/creatnewgroup",
+			success:function(data){
+				if (data.code == "100") {
+					console.log("创建分组，回显到页面 100 "+data.info);
+				}
+				if (data.code == "200") {
+					console.log("创建分组，回显到页面 200 "+data.info);
+				}
+				//执行一次分组回显//填充分组信息到学生分组信息面板courseid,group
+				ajaxcourse(courseid);
+			},
+			error:function(data){
+				console.log("创建分组，回显到页面 error!");
+			}
+		});
 	}
 	
 	
@@ -586,10 +611,9 @@
 								<div id="newteams" style="display: flex;justify-content: space-between;margin: 0px 15px;padding: 2px;">
 									<p>班级分组信息</p>
 									<!-- 创建项目 -->
-									<!-- Button trigger modal -->
-									<!-- <button type="button" class="btn btn-default btn-lg" style="padding: 1px;font-size: 1em;" data-toggle="modal" data-target="#CreattProjectModal">
+									<button type="button" class="btn btn-default" style="padding: 1px 2px;font-size: 1em;" data-toggle="modal" onclick="newteam();">
 										创建分组
-									</button> -->
+									</button>
 								</div>
 							</div>
 							<!-- 来一条分割线怎么说 -->

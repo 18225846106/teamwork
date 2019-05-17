@@ -30,8 +30,8 @@
 	
 	//test
 	function d(group){
-		alert("group:"+group);
-		alert("  "+typeof(group));
+		/* alert("group:"+group);
+		alert("  "+typeof(group)); */
 	}
 </script>
 
