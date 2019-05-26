@@ -192,6 +192,25 @@
 		order by teamid asc, studentid asc, `character` desc
 	</select>
 	
+	<!-- 根据teamstudent查找teamstudent -->
+	<select id="findTeamstudentByTeamstudent" parameterType="Teamstudent" resultType="Teamstudent">
+		SELECT * FROM team_student 
+		<where>
+			<if test="teamid != null">
+				and teamid = #{teamid}
+			</if>
+			<if test="studentid != null">
+				and studentid = #{studentid}
+			</if>
+			<if test="courseid != null">
+				and courseid = #{courseid}
+			</if>
+			<if test="character != null">
+				and `character` = #{character}
+			</if>
+		</where>
+	</select>
+	
 	<!-- 插入新的小组学生表 -->
 	<insert id="insertTeamstudent" parameterType="Teamstudent">
 		INSERT INTO team_student 

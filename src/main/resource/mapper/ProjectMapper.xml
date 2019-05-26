@@ -17,6 +17,7 @@
 		<result column="finishtime" jdbcType="TIMESTAMP"
 			property="finishtime" />
 		<result column="state" jdbcType="INTEGER" property="state" />
+		<result column="score" jdbcType="REAL" property="score"/>
 	</resultMap>
 	<sql id="Example_Where_Clause">
 		<where>
@@ -325,14 +326,14 @@
 	<!-- 全属性插入,新建一个项目 -->
 	<insert id="insertProject" parameterType="Project">
 		INSERT INTO PROJECT (id, code, name, courseid, tid,
-		progress, starttime, endtime, finishtime, state, description)
+		progress, starttime, endtime, finishtime, state, description, score)
 		VALUES
 		(#{id,jdbcType=VARCHAR}, #{code,jdbcType=VARCHAR},
 		#{name,jdbcType=VARCHAR}, #{courseid,jdbcType=VARCHAR},
 		#{tid,jdbcType=VARCHAR}, #{progress,jdbcType=REAL},
 		#{starttime,jdbcType=TIMESTAMP}, #{endtime,jdbcType=TIMESTAMP},
 		#{finishtime,jdbcType=TIMESTAMP}, #{state,jdbcType=INTEGER},
-		#{description,jdbcType=VARCHAR})
+		#{description,jdbcType=VARCHAR}, #{score,jdbcType=REAL})
 	</insert>
 	
 	<!-- 根据id修改项目的信息 -->
@@ -368,6 +369,9 @@
 			</if>
 			<if test="description != null">
 				description = #{description,jdbcType=VARCHAR} ,
+			</if>
+			<if test="score != null">
+				score = #{scor,jdbcType=REAL},
 			</if>
 		</set>
 		<where>

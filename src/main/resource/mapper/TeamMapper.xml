@@ -7,6 +7,7 @@
 		<result column="name" jdbcType="VARCHAR" property="name" />
 		<result column="courseid" jdbcType="VARCHAR"
 			property="courseid" />
+		<result column="score" jdbcType="REAL" property="score"/>
 	</resultMap>
 	<sql id="Example_Where_Clause">
 		<where>
@@ -177,14 +178,150 @@
 		ORDER BY ID ASC
 	</select>
 	
+	<!-- 根据小组id找到小组 -->
+	<select id="findTeamByTeamid" parameterType="String" resultType="Team">
+		SELECT * 
+		FROM TEAM 
+		<where>
+			id = #{teamid}
+		</where>
+		ORDER BY ID ASC
+	</select>
+	
+	<!-- 根据team找到小组 -->
+	<select id="findTeam" parameterType="Team" resultType="Team">
+		SELECT * 
+		FROM TEAM 
+		<where>
+			<if test="id != null">
+				and id = #{id}
+			</if>
+			<if test="courseid != null">
+				and COURSEID = #{courseid}
+			</if>
+			<if test="code != null">
+				and code = #{code}
+			</if>
+			<if test="name != null">
+				and name = #{name}
+			</if>
+			<if test="score != null">
+				and score = #{score}
+			</if>
+		</where>
+		ORDER BY ID ASC
+	</select>
+	
 	<!-- 插入一个新的小组 -->
 	<insert id="insertTeam" parameterType="Team">
 		INSERT INTO TEAM
-		(ID,CODE,NAME,COURSEID)
+		(ID,CODE,NAME,COURSEID,SCORE)
 		VALUES(
-		#{id},#{code},#{name},#{courseid}
+		#{id},#{code},#{name},#{courseid},#{score}
 		)
 	</insert>
+	
+	<!-- 插入一个新的小组 -->
+	<insert id="insertTeamSelect" parameterType="Team">
+		insert into team
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="code != null">
+				code,
+			</if>
+			<if test="name != null">
+				name,
+			</if>
+			<if test="courseid != null">
+				courseid,
+			</if>
+			<if test="score != null">
+				score,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id},
+			</if>
+			<if test="code != null">
+				#{code},
+			</if>
+			<if test="name != null">
+				#{name},
+			</if>
+			<if test="courseid != null">
+				#{courseid},
+			</if>
+			<if test="score != null">
+				#{score},
+			</if>
+		</trim>
+	</insert>
+	
+	<!-- 更新 小组 信息 -->
+	<update id="updateTeamById" parameterType="Team">
+		update team 
+		<set>
+			<if test="code != null">
+				code = #{code},
+			</if>
+			<if test="name != null">
+				name = #{name},
+			</if>
+			<if test="courseid != null">
+				courseid = #{courseid},
+			</if>
+			<if test="score != null">
+				score = #{score},
+			</if>
+		</set>
+		<where>
+			<if test="id != null">
+				and id = #{id}
+			</if>
+		</where>
+	</update>
+	
+	<!-- 更新 小组 信息 -->
+	<update id="updateTeam" parameterType="Team">
+		update team 
+		<set>
+			<if test="id != null">
+				id = #{id},
+			</if>
+			<if test="code != null">
+				code = #{code},
+			</if>
+			<if test="name != null">
+				name = #{name},
+			</if>
+			<if test="courseid != null">
+				courseid = #{courseid},
+			</if>
+			<if test="score != null">
+				score = #{score},
+			</if>
+		</set>
+		<where>
+			<if test="id != null">
+				and id = #{id}
+			</if>
+			<if test="code != null">
+				and code = #{code}
+			</if>
+			<if test="name != null">
+				and name = #{name}
+			</if>
+			<if test="courseid != null">
+				and courseid = #{courseid}
+			</if>
+			<if test="score != null">
+				and score = #{score}
+			</if>
+		</where>
+	</update>
 	
 	<!-- 根据课程id删除对应课程的分组 -->
 	<delete id="deleteTeamByCourseid" parameterType="String">
