@@ -18,7 +18,14 @@
 <!-- 引入进度球的ProgressBall的样式 -->
 <link rel="stylesheet" href="<%=request.getContextPath()%>/static/css/ProgressBall.css" type="text/css">
 
+<!-- 引入util的js文件 -->
+<script type="text/javascript" src="<%=request.getContextPath()%>/static/js/util.js"></script>
+
 <script type="text/javascript">
+
+	var studentid = <%=request.getAttribute("studentid")%>;
+	var courseid = <%=request.getAttribute("courseid")%>;
+
 	$(function(){
 		var studentid = <%=request.getAttribute("studentid")%>;
 		var courseid = <%=request.getAttribute("courseid")%>;
@@ -84,7 +91,32 @@
 			}
 		});
 		
+		//第三步:显示个人得分情况
+		ajaxcoursestudent(courseid,studentid);
+		
 	});
+	
+	//第三步:显示个人得分情况
+	function ajaxcoursestudent(courseid,studentid){
+		$.ajax({
+			type:"post",
+			dataType:"json",
+			data:{courseid:courseid,studentid:studentid},
+			url:"/teamwork/coursestudent/findcoursestudentbycsid",
+			success:function(data){
+				if (data.code == "200") {
+					console.log(data.info);
+					$("#coursestudentpersonscore").val(data.coursestudent.personscore);
+				}
+				if (data.code == "100") {
+					console.log(data.info);
+				}
+			},
+			error:function(data){
+				
+			}
+		});
+	}
 	
 	//填充学生信息
 	function displaystudent(data) {
@@ -110,14 +142,14 @@
 		$.each(assignments,function(index,assignment){
 			console.log("assignment:"+assignment);
 			//新建一个表格
-			var table = $("<table></table>").attr("id",assignment.id).addClass("table table-hover");
+			var table = $("<table></table>").attr("id",assignment.id).addClass("table table-hover Assignmenttable");
 			
 			//项目编号
-			var trpid = $("<tr></tr>").append($("<td></td>").text("项目编号:")).append($("<td></td>").text(assignment.projectid).attr({"style":"color: blue;","onclick":"toProjectAssignment("+assignment.projectid+")"}));
+			var trpid = $("<tr></tr>").append($("<td></td>").text("项目编号:")).append($("<td></td>").text(codetoolang(assignment.projectid)).attr({"style":"color: blue;","onclick":"toProjectAssignment('"+assignment.projectid+"')","title":assignment.projectid}));
 			//任务编号
-			var trid = $("<tr></tr>").append($("<td></td>").text("任务编号:")).append($("<td></td>").text(assignment.id).attr({"style":"color: blue;","onclick":"toAssignmentDetail("+assignment.id+")"}));
+			var trid = $("<tr></tr>").append($("<td></td>").text("任务编号:")).append($("<td></td>").text(codetoolang(assignment.id)).attr({"style":"color: blue;","onclick":"toAssignmentDetail('"+assignment.id+"')","title":assignment.id}));
 			//任务名称
-			var trname = $("<tr></tr>").append($("<td></td>").text("任务名称:")).append($("<td></td>").text(assignment.name));
+			var trname = $("<tr></tr>").append($("<td></td>").text("任务名称:")).append($("<td></td>").text(codetoolang(assignment.name)).attr({"title":assignment.name}));
 			//任务状态，状态不同，修改样式
 			if (assignment.state == 1) {
 				var trstate = $("<tr></tr>").append($("<td></td>").text("任务状态:")).append($("<td></td>").text("未开始"));
@@ -140,7 +172,7 @@
 				var trsfinishime = $("<tr></tr>").append($("<td></td>").text("结束时间:")).append($("<td></td>").text(getdate(assignment.finishtime)));
 			}
 			else if (assignment.state == 1) {
-				var trsfinishime = $("<tr></tr>").append($("<td></td>").text("结束时间:")).append($("<td></td>").text(assignment.finishtime));
+				var trsfinishime = $("<tr></tr>").append($("<td></td>").text("结束时间:")).append($("<td></td>").text("----"));
 			}
 			else if (assignment.state == 2) {
 				var trsfinishime = $("<tr></tr>").append($("<td></td>").text("结束时间:")).append($("<td></td>").text("----"));
@@ -255,41 +287,76 @@
 </head>
 <body>
 
-	<!-- 展示学生信息 -->
-	<div class="Student">
-		<div class="container">
-			<div class="row">
-				<p>学生信息</p>
-			</div>
-			<div class="row">
-				<div class="col-md-12">
-					<table id="students_table" class="table table-hover">
-						<thead>
-							<tr>
-								<th>学号</th>
-								<th>姓名</th>
-								<th>性别</th>
-								<th>年级</th>
-								<th>班级</th>
-							</tr>
-						</thead>
-						<tbody class="tbodytd">
-							<!-- 每一条学生的数据 -->
-						</tbody>
-					</table>
-				</div>
-			</div>
+	<!-- 页面布局的头部 -->
+	<div id="head" style="height: 200px;background-image: url(/teamwork/static/img/headcartoon.gif);background-repeat: no-repeat;background-position:center;">
+		<div style="display: flex;height:  2em;justify-content: flex-end;justify-items: center;width: 100%;">
+			<div style="min-width: 50px;"><p>欢迎：</p></div>
+			<div id="customer" style="min-width: 50px"><p><%=session.getAttribute("loginname") %></p></div>
+			<div style="min-width: 50px;color: blue;font: inherit;" onclick="loginout();"><p>退出!</p></div>
 		</div>
+		<!-- <img alt="xiatongtoubutupian" src="/teamwork/static/img/headcartoon.gif"> -->
 	</div>
 	
-	<!-- 展示学生在班级内的任务 -->
-	<div class="StudentAssignment">
-		<div class="container">
-			<div class="row">
-				<div id="AssignmentList" class="col-md-12">
-					
+	<!-- 中间体 -->
+	<div style="display: flex;width: 100%;">
+		
+		<div style="width: 20%;"></div>
+		<!-- 切片页面 -->
+		<div style="width: 80%;">
+		
+			<!-- 展示学生信息 -->
+			<div class="Student">
+				<div class="container">
+					<div class="row">
+						<p>学生信息</p>
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<table id="students_table" class="table table-hover">
+								<thead>
+									<tr>
+										<th>学号</th>
+										<th>姓名</th>
+										<th>性别</th>
+										<th>年级</th>
+										<th>班级</th>
+									</tr>
+								</thead>
+								<tbody class="tbodytd">
+									<!-- 每一条学生的数据 -->
+								</tbody>
+							</table>
+						</div>
+					</div>
 				</div>
 			</div>
+			
+			<!-- 展示学生在班级内的任务 -->
+			<div class="StudentAssignment">
+				<div class="container">
+					<div class="row">
+						<div id="AssignmentList" class="col-md-12">
+							
+						</div>
+					</div>
+				</div>
+			</div>
+		
+			<!-- 个人评分模块 -->
+			<div style="width: 95%;margin-top: 10px;display: flex;justify-content: space-between;">
+				<div style="display: flex;">
+					<div style="padding: 1px 4px;">
+						个人分数:
+					</div>
+					<div>
+						<input id="coursestudentpersonscore" type="text" class="" style="width: auto;border-radius: 2px;" placeholder="输入0-100的正数" title="输入0-100的正数" <%-- onkeyup="clearNoNum(this)" --%> <%-- onkeyup="this.value = this.value.replace(/^(100|[1-9]\d|\d)(.\d{1,2})$/,'')" --%>>
+					</div>
+				</div>
+				<div style="padding: 1px 4px;">
+					<input type="button" class="btn btn-primary" style="padding: 2px 4px;" value="提交分数" onclick="coursestudentpersonsubmitscore()">
+				</div>
+			</div>
+		
 		</div>
 	</div>
 

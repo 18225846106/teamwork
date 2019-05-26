@@ -29,6 +29,8 @@
 	var teamid = <%=request.getAttribute("teamid")%>;
 	
 	var sid = "";
+	
+	var allstudnets;//存储一下小组的所有人，要用到学号修改分数
 
 	$(function(){
 		var teamid = <%=request.getAttribute("teamid")%>;
@@ -41,7 +43,31 @@
 		//第二步:查询小组内所有项目信息
 		ajaxteamprojects(teamid);
 		
+		//第三部:显示分数
+		ajaxteam(teamid);
+		
 	});
+	
+	//小组信息
+	function ajaxteam(teamid){
+		$.ajax({
+			type:"post",
+			dataType:"json",
+			data:{teamid:teamid},
+			url:"/teamwork/team/findteambyteamid",
+			success:function(data){
+				if (data.code == "200") {
+					if (data.team.score != null) {
+						//有小组分数时,显示小组分数
+						$("#teamscore").val(data.team.score);
+					}
+				}
+			},
+			error:function(data){
+				
+			}
+		});
+	}
 	
 	//小组信息
 	function displayteam(data) {
@@ -140,10 +166,10 @@
 			tr.append($("<td></td>").text(sts.studentclassname));
 			//加入角色
 			if (sts.character == 1) {
-				tr.append($("<td></td>").text("组长"));
+				tr.append($("<td></td>").text("组长").attr({"onclick":"allotcharactermodal('"+sts.studentid+"')","title":"可重新指定!"}));
 			}
 			else if (sts.character == 2) {
-				tr.append($("<td></td>").text("组员"));
+				tr.append($("<td></td>").text("组员").attr({"onclick":"allotcharactermodal('"+sts.studentid+"')","title":"可重新指定!"}));
 			}
 			else if (sts.character == null) {
 				tr.append($("<td></td>").text("指定").attr({"style":"color: blue;","onclick":"allotcharactermodal('"+sts.studentid+"')"}));
@@ -329,50 +355,120 @@
 		return code;
 	} */
 	
+	$("#teamscore").keydown(function(e) {
+		var keyCode = e.keyCode;
+		if((keyCode >= 48 && keyCode <= 57 || keyCode === 190 || keyCode === 8) && !(!$("#inp2").val() && e.keyCode === 48)) {
+			var num = ($("#inp2").val() + "" + e.key);
+			if(/^[0-9]+(.[0-9]{0,2})?$/.test(num)) {
+			} else {
+				if(e.keyCode === 8) {
+				return;
+			}
+			e.preventDefault();
+			}
+		} else {
+			e.preventDefault();
+		}
+	});
+	
+	function clearNoNum(obj) {
+		obj.value = obj.value.replace(/[^\d.]/g,""); //清除"数字"和"."以外的字符
+        obj.value = obj.value.replace(/^\./g,""); //验证第一个字符是数字而不是
+        obj.value = obj.value.replace(/\.{2,}/g,"."); //只保留第一个. 清除多余的
+        obj.value = obj.value.replace(".","$#$").replace(/\./g,"").replace("$#$",".");
+        obj.value = obj.value.replace(/(\d{0,2})(\d+)\.(\d\d).*$/,'$1$2.$3'); //只能输入两个小数
+	}
+	
 </script>
 
 </head>
 <body>
 
-	<!-- 展示团队人员信息 -->
-	<div class="Student">
-		<!-- 表头team -->
-		<div class="container">
-			<div class="row">
-				<div class="col-md-12">
-					<table id="team_table" class="table table-hover">
-					</table>
-				</div>
-			</div>
+	<!-- 页面布局的头部 -->
+	<div id="head" style="height: 200px;background-image: url(/teamwork/static/img/headcartoon.gif);background-repeat: no-repeat;background-position:center;">
+		<div style="display: flex;height:  2em;justify-content: flex-end;justify-items: center;width: 100%;">
+			<div style="min-width: 50px;"><p>欢迎：</p></div>
+			<div id="customer" style="min-width: 50px"><p><%=session.getAttribute("loginname") %></p></div>
+			<div style="min-width: 50px;color: blue;font: inherit;" onclick="loginout();"><p>退出!</p></div>
 		</div>
-		<!-- 表体students -->
-		<div class="container">
-			<div class="row">
-				<div class="col-md-12">
-					<table id="students_table" class="table table-hover">
-					</table>
-				</div>
-			</div>
-		</div>
+		<!-- <img alt="xiatongtoubutupian" src="/teamwork/static/img/headcartoon.gif"> -->
 	</div>
 	
-	<!-- 展示团队项目信息 -->
-	<div class="StudentProject">
-		<div class="container">
-			<div class="row">
-				<!-- 右移一格 -->
-				<!-- <div class="col-md-1">
+	<!-- 中间体 -->
+	<div style="display: flex;width: 100%;">
+	
+		<div style="width: 20%;"></div>
+		<!-- 切片页面 -->
+		<div style="width: 80%;">
+	
+			<!-- 展示团队人员信息 -->
+			<div class="Student">
+				<!-- 表头team -->
+				<div class="container">
+					<div class="row">
+						<div class="col-md-12">
+							<table id="team_table" class="table table-hover">
+							</table>
+						</div>
+					</div>
+				</div>
+				<!-- 表体students -->
+				<div class="container">
+					<div class="row">
+						<div class="col-md-12">
+							<table id="students_table" class="table table-hover">
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<!-- 展示团队项目信息 -->
+			<div class="StudentProject">
+				<div class="container">
+					<div class="row">
+						<!-- 右移一格 -->
+						<!-- <div class="col-md-1">
+						</div> -->
+						<!-- 十二分格占中间十个 -->
+						<div id="projectlists" class="col-md-10">
+							<!-- 项目列表体 -->
+							<!-- <table id="projects_table" class="table table-hover">
+							</table> -->
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<!-- 小组评分模块 -->
+			<div style="width: 95%;margin-top: 10px;display: flex;justify-content: space-between;">
+				<!-- <div>
+					<div class="form-group" style="display: flex;">
+						小组分数:
+						<input type="text" class="" style="width: auto;" id="teamscore" placeholder="输入0-100的正数" onkeyup="clearNoNum(this)">
+						<input type="checkbox">小组成员分数与小组分数相同
+					</div>
 				</div> -->
-				<!-- 十二分格占中间十个 -->
-				<div id="projectlists" class="col-md-10">
-					<!-- 项目列表体 -->
-					<!-- <table id="projects_table" class="table table-hover">
-					</table> -->
+				<div style="display: flex;">
+					<div style="padding: 1px 4px;">
+						小组分数:
+					</div>
+					<div>
+						<input id="teamscore" type="text" class="" style="width: auto;border-radius: 2px;" placeholder="输入0-100的正数" <%-- onkeyup="clearNoNum(this)" --%> onkeyup="this.value = this.value.replace(/^(100|[1-9]\d{0,2})([.]{1,1}\d{1,2})$/,'')">
+					</div>
+					<div style="padding: 1px 4px;">
+						<input id="samescore" type="checkbox">小组成员分数与小组分数相同
+					</div>
+				</div>
+				<div style="padding: 1px 4px;">
+					<input type="button" class="btn btn-primary" style="padding: 2px 4px;" value="提交分数" onclick="courseteamsubmitscore()">
 				</div>
 			</div>
+			
 		</div>
 	</div>
 	
+	<!-- 指定角色模态框 -->
 	<!-- Modal -->
 	<div class="modal fade" id="AllotCharacterModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
 		<div class="modal-dialog" role="document">

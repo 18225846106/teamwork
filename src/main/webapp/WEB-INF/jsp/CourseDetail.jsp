@@ -293,10 +293,21 @@
 			//画按钮
 			if (project.tid != null && project.tid != "") {//当项目已经被分组
 				var trbut = $("<tr></tr>")
-						.append($("<td></td>").text("分配到小组编号:"+codetoolang(project.tid)))
-						.append($("<td></td>")
-								.append($("<button></button>").attr({"type":"button","data-toggle":"modal","data-target":"#EditProjectModal","style":"padding: 2px;font-size: 1em;","onclick":"editProject('"+project.id+"');"}).addClass("btn btn-default btn-lg").text("编辑项目"))
-								.append($("<button></button>").attr({"type":"button","style":"padding: 2px;font-size: 1em;","onclick":"deleteProject('"+project.id+"','"+project.name+"');"}).addClass("btn btn-default").text("删除项目")))
+						.append($("<td></td>").text("分配到小组编号:"+codetoolang(project.tid)))//是否给一个按钮如果项目没开始,可以重新分配
+				if (project.state == 1) {
+					trbut.append($("<td></td>")
+							.append($("<button></button>").attr({"type":"button","data-toggle":"modal","data-target":"#AllotProjectModal","style":"padding: 2px;font-size: 1em;","title":"项目未开始可重新分配","onclick":"getteam('"+project.id+"');"}).addClass("btn btn-default btn-lg").text("分配项目"))
+							.append($("<button></button>").attr({"type":"button","data-toggle":"modal","data-target":"#EditProjectModal","style":"padding: 2px;font-size: 1em;","onclick":"editProject('"+project.id+"');"}).addClass("btn btn-default btn-lg").text("编辑项目"))
+							.append($("<button></button>").attr({"type":"button","style":"padding: 2px;font-size: 1em;","onclick":"deleteProject('"+project.id+"','"+project.name+"');"}).addClass("btn btn-default").text("删除项目")))
+				}
+				else{
+					trbut.append($("<td></td>")
+							.append($("<button></button>").attr({"type":"button","data-toggle":"modal","data-target":"#EditProjectModal","style":"padding: 2px;font-size: 1em;","onclick":"editProject('"+project.id+"');"}).addClass("btn btn-default btn-lg").text("编辑项目"))
+							.append($("<button></button>").attr({"type":"button","style":"padding: 2px;font-size: 1em;","onclick":"deleteProject('"+project.id+"','"+project.name+"');"}).addClass("btn btn-default").text("删除项目")))
+				}
+						//.append($("<td></td>")
+						//		.append($("<button></button>").attr({"type":"button","data-toggle":"modal","data-target":"#EditProjectModal","style":"padding: 2px;font-size: 1em;","onclick":"editProject('"+project.id+"');"}).addClass("btn btn-default btn-lg").text("编辑项目"))
+						//		.append($("<button></button>").attr({"type":"button","style":"padding: 2px;font-size: 1em;","onclick":"deleteProject('"+project.id+"','"+project.name+"');"}).addClass("btn btn-default").text("删除项目")))
 				tbody.append(trbut);
 			}else {//当项目没有分配到组//给出按钮，弹出模态框
 				var trbut = $("<tr></tr>")
@@ -424,9 +435,16 @@
 				if (data.code == "200") {
 					console.log(data.info);
 					//填充选项
+					$("#allotteams").empty();//填充前先清空
+					$("#allotteamchose").val("");
+					$("#allotteams").append($("<option></option>").attr({"value":"","style":"color:#c2c2c2;"}).text("---请选择---"));
 					$.each(data.teams,function(index,team){
 						//<option value="team.id">team.name</option>
-						$("#allotteams").append($("<option></option>").attr({"value":team.id}).text(team.name));
+						if (team.name == null || team.name == "") {
+							$("#allotteams").append($("<option></option>").attr({"value":team.id}).text(codetoolang(team.id)));
+						} else {
+							$("#allotteams").append($("<option></option>").attr({"value":team.id}).text(team.name));
+						}
 					});
 				}
 			},
@@ -458,6 +476,9 @@
 					}
 					if(data.code == "200"){
 						console.log(data.info);
+						alert("指配成功!");
+						//指配成功隐藏模态框
+						$("#AllotProjectModal").modal("hide");
 						//重新填充班级项目信息
 						ajaxproject(courseid);
 					}
@@ -540,7 +561,7 @@
 	<div id="head" style="height: 200px;background-image: url(/teamwork/static/img/headcartoon.gif);background-repeat: no-repeat;background-position:center;">
 		<div style="display: flex;height:  2em;justify-content: flex-end;justify-items: center;width: 100%;">
 			<div style="min-width: 50px;"><p>欢迎：</p></div>
-			<div id="customer" style="min-width: 50px"><p>moumou</p></div>
+			<div id="customer" style="min-width: 50px"><p><%=session.getAttribute("loginname") %></p></div>
 			<div style="min-width: 50px;color: blue;font: inherit;" onclick="loginout();"><p>退出!</p></div>
 		</div>
 		<!-- <img alt="xiatongtoubutupian" src="/teamwork/static/img/headcartoon.gif"> -->
@@ -666,7 +687,7 @@
 									<p>班级项目信息</p>
 									<!-- 创建项目 -->
 									<!-- Button trigger modal -->
-									<button type="button" class="btn btn-default btn-lg" style="padding: 1px;font-size: 1em;" data-toggle="modal" data-target="#CreattProjectModal">
+									<button type="button" class="btn btn-default btn-lg" style="padding: 1px;font-size: 1em;" data-toggle="modal" data-target="#CreatProjectModal">
 										新建项目
 									</button>
 								</div>
@@ -784,12 +805,12 @@
 	
 	<!-- 创建项目 -->
 	<!-- Button trigger modal -->
-	<!-- <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#CreattProjectModal">
-		CreattProjectModal
+	<!-- <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#CreatProjectModal">
+		CreatProjectModal
 	</button> -->
 	
 	<!-- Modal -->
-	<div class="modal fade" id="CreattProjectModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	<div class="modal fade" id="CreatProjectModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -864,7 +885,7 @@
 							            <td align="left">
 							                <span style="position:absolute;border:1pt solid #c1c1c1;overflow:hidden;width:188px;height:19px;clip:rect(-1px 190px 190px 170px);">
 							                    <select name="allotteams" id="allotteams" style="width:190px;height:20px;margin:-2px;" onchange="choseteam();">
-								                    <option value="" style="color:#c2c2c2;">---请选择---</option>
+								                    <!-- <option value="" style="color:#c2c2c2;">---请选择---</option> -->
 								                    <!-- getteam()函数填充 -->
 							                    </select>
 							                </span>

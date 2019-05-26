@@ -83,7 +83,7 @@
 				//登录的是学生
 				urladd = urladd + "/student/login";
 				//验证成功跳转到学生界面
-				pageurl = "/teamwork/jump/studentmain"+"?username="+username;//+"&password="+password;
+				pageurl = "/teamwork/jump/studentcourse"+"?username="+username;//+"&password="+password;
 			} 
 			//else if ($("#sext").attr("checked") == "checked") {
 			else if ( job == "Teacher" ) {
@@ -108,11 +108,20 @@
 					console.log(data);
 					console.log(window.location.href);//当前地址
 					console.log("session:"+<%=session.getAttribute("LOGIN")%>);
-					alert("success" + data.toString());
-					
+					//alert("success" + data.toString());
+					if(data.code == "200" || data.type == 0){
 					//验证成功，执行跳转
 					window.location.href = pageurl;
 					//window.location.href="/teamwork/jump/studentmain1"+"?username="+username+"&password="+password;
+					}
+					if (data.code =="100") {
+						if (data.type == 1) {
+							alert(data.info);
+						}
+						if (data.type == 2) {
+							alert(data.info);
+						}
+					}
 					
 				},
 				error : function(data) {
