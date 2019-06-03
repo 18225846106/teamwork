@@ -20,6 +20,7 @@ import cn.edu.ahut.teamwork.dao.ComplexsqlMapper;
 import cn.edu.ahut.teamwork.entity.Course;
 import cn.edu.ahut.teamwork.entity.Student;
 import cn.edu.ahut.teamwork.entity.StudentAssignment;
+import cn.edu.ahut.teamwork.entity.TeacherCourse;
 import cn.edu.ahut.teamwork.entity.Team;
 import cn.edu.ahut.teamwork.entity.Teamstudent;
 import cn.edu.ahut.teamwork.entity.Teamteamstudentstudent;
@@ -30,7 +31,6 @@ import cn.edu.ahut.teamwork.service.TeamstudentService;
 import cn.edu.ahut.teamwork.util.TeamWorkUtils;
 
 @Controller
-//@RequestMapping(value="/ttss")
 public class ComplexsqlController {
 	
 	TeamWorkUtils teamWorkUtils = new TeamWorkUtils();
@@ -230,6 +230,208 @@ public class ComplexsqlController {
 							teamstudentService.deleteTeamstudentByCourseid(courseid);
 						}
 					}
+				}
+			}
+			map.put("code", code);
+			map.put("info", info);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return map;
+	}
+	
+	/**
+	 * 查找，项目 所在小组的成员id，team_student
+	 * @param projectid
+	 * @param request
+	 * @param response
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value="/teamstudent/findteamstudentbyprojectid")
+	@ResponseBody
+	public Map<String, Object> findTeamstudentByProjectid(
+			@RequestParam(value="projectid",defaultValue="") String projectid,
+			HttpServletRequest request,HttpServletResponse response,Model model) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		try {
+			if (projectid == null || projectid.equals("")) {
+				map.put("code", "100");
+				map.put("info", "项目id丢失!");
+			} else {
+				List<Teamstudent> teamstudents = complexsqlService.findTeamstudentByProjectid(projectid);
+				if (teamstudents == null) {
+					map.put("code", "100");
+					map.put("info", "查找失败!");
+				} else {
+					map.put("code", "200");
+					map.put("info", "查找成功!");
+					map.put("teamstudents", teamstudents);
+				}
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return map;
+	}
+	
+	/**
+	 * 插入小组分数，通过teamid，到team-student找到studentid，courseid，到course-student表修改teamscore
+	 * @param teamid
+	 * @param score
+	 * @param request
+	 * @param response
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value="/setteamscore")
+	@ResponseBody
+	public Map<String, Object> setTeamScore(
+			@RequestParam(value="teamid",defaultValue="") String teamid,
+			@RequestParam(value="score",defaultValue="") String score,
+			HttpServletRequest request,HttpServletResponse response,Model model){
+		Map<String, Object> map = new HashMap<String, Object>();
+		try {
+			String code = "200";
+			String info = "";
+			if (teamid == null || teamid.equals("")) {
+				code = "100";
+				info = info + " 小组id空!";
+			}
+			if (score == null || score.equals("") || Float.valueOf(score) < 0) {
+				code = "100";
+				info = info + " 小组分数空或无效值!";
+			}
+			if (code.equals("100")) {
+				//
+			} else if(code.equals("200")){
+				//
+				Team team = new Team();
+				team.setId(teamid);
+				team.setScore(Float.valueOf(score));
+				//更新team表的分数
+				int result1 = teamService.updateTeamById(team);
+				//更新班级学生表的分数
+				int result2 = complexsqlService.updateCoursestudentTeamscoreByTeam(team);
+				if (result1 > 0) {
+					info = info + " 小组分数成功更新!";
+				}
+				else {
+					code = "100";
+					info = info + " 小组分数更新失败!";
+				}
+				if (result2 > 0) {
+					info = info + " 班级学生表小组成绩更新成功!";
+				}
+				else {
+					code = "100";
+					info = info + " 班级学生表小组成绩更新失败!";
+				}
+			}
+			map.put("code", code);
+			map.put("info", info);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return map;
+	}
+	
+	/**
+	 * 同时设置小组分数和个人分数
+	 * 两个的值使用相同的
+	 * 插入小组分数同时个人分等同于小祖分，通过teamid，到team-student找到studentid，courseid，到course-student表修改teamscore和personscore
+	 * @param teamid
+	 * @param score
+	 * @param request
+	 * @param response
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value="/setteampersonscore")
+	@ResponseBody
+	public Map<String, Object> setTeamPersonScore(
+			@RequestParam(value="teamid",defaultValue="") String teamid,
+			@RequestParam(value="score",defaultValue="") String score,
+			HttpServletRequest request,HttpServletResponse response,Model model){
+		Map<String, Object> map = new HashMap<String, Object>();
+		try {
+			String code = "200";
+			String info = "";
+			if (teamid == null || teamid.equals("")) {
+				code = "100";
+				info = info + " 小组id空!";
+			}
+			if (score == null || score.equals("") || Float.valueOf(score) < 0) {
+				code = "100";
+				info = info + " 小组分数空或无效值!";
+			}
+			if (code.equals("100")) {
+				//
+			} else if(code.equals("200")){
+				//
+				Team team = new Team();
+				team.setId(teamid);
+				team.setScore(Float.valueOf(score));
+				//更新team表的分数
+				int result1 = teamService.updateTeam(team);
+				//更新班级学生表的分数,同时修改个人分数
+				int result2 = complexsqlService.updateCoursestudentTpscoreByTeam(team);
+				if (result1 > 0) {
+					info = info + " 小组分数成功更新!";
+				}
+				else {
+					code = "100";
+					info = info + " 小组分数更新失败!";
+				}
+				if (result2 > 0) {
+					info = info + " 班级学生表小组成绩个人成绩更新成功!";
+				}
+				else {
+					code = "100";
+					info = info + " 班级学生表小组成绩个人成绩更新失败!";
+				}
+			}
+			map.put("code", code);
+			map.put("info", info);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return map;
+	}
+	
+	/**
+	 * 查询学生的所有课程和老师信息
+	 * @param studentid
+	 * @param request
+	 * @param response
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value="/findteachercoursebystudentid")
+	@ResponseBody
+	public Map<String, Object> temp(
+			@RequestParam(value="studentid",defaultValue="") String studentid,
+			HttpServletRequest request, HttpServletResponse response,Model model){
+		Map<String, Object> map = new HashMap<String, Object>();
+		try {
+			String code = "200";//初始是成功
+			String info = "";//提示信息初始是空字符串
+			if (studentid == null || studentid.equals("")) {
+				code = "100";
+				info = info + " 学号空!";
+			} else {
+				List<TeacherCourse> teacherCourses = complexsqlService.findTeachercourseByStudentid(studentid);
+				if (teacherCourses == null) {
+					code = "100";
+					info = info + " 查询失败!";
+				} else {
+					code = "200";
+					info = info + " 查询成功!";
+					map.put("teachercourses", teacherCourses);
 				}
 			}
 			map.put("code", code);

@@ -277,5 +277,87 @@
 			ID = #{assignmentid}
 		</where>
 	</select>
+	
+	<!-- 全属性插入新建一个任务 -->
+	<insert id="insertAssignment" parameterType="Assignment">
+		INSERT INTO ASSIGNMENT (id, code, name, projectid, studentid,
+		progress, starttime, endtime, finishtime, state, studentscore,
+		teacherscore, score, description)
+		VALUES
+		(#{id,jdbcType=VARCHAR}, #{code,jdbcType=VARCHAR},
+		#{name,jdbcType=VARCHAR}, #{projectid,jdbcType=VARCHAR},
+		#{studentid,jdbcType=VARCHAR}, #{progress,jdbcType=REAL},
+		#{starttime,jdbcType=TIMESTAMP}, #{endtime,jdbcType=TIMESTAMP},
+		#{finishtime,jdbcType=TIMESTAMP}, #{state,jdbcType=INTEGER},
+		#{studentscore,jdbcType=VARCHAR},  #{teacherscore,jdbcType=REAL},
+		#{score,jdbcType=REAL}, #{description,jdbcType=VARCHAR})
+	</insert>
+	
+	<!-- 根据id修改任务的信息 -->
+	<update id="updateAssignment" parameterType="Assignment">
+		UPDATE ASSIGNMENT 
+		<set>
+			<if test="code != null">
+				code = #{code,jdbcType=VARCHAR} ,
+			</if>
+			<if test="name != null">
+				name = #{name,jdbcType=VARCHAR} ,
+			</if>	
+			<if test="projectid != null">
+				projectid = #{projectid,jdbcType=VARCHAR} ,
+			</if>
+			<if test="studentid != null">
+				studentid = #{studentid,jdbcType=VARCHAR} ,
+			</if>
+			<if test="progress != null">
+				progress =  #{progress,jdbcType=REAL} ,
+			</if>
+			<if test="starttime != null">
+				starttime = #{starttime,jdbcType=TIMESTAMP} ,
+			</if>
+			<if test="endtime != null">
+				endtime = #{endtime,jdbcType=TIMESTAMP} ,
+			</if>
+			<if test="finishtime != null">
+				finishtime = #{finishtime,jdbcType=TIMESTAMP} ,
+			</if>
+			<if test="state != null">
+				state = #{state,jdbcType=INTEGER} ,
+			</if>
+			<if test="studentscore != null">
+				studentscore = #{studentscore,jdbcType=VARCHAR} ,
+			</if>
+			<if test="teacherscore != null">
+				teacherscore =  #{teacherscore,jdbcType=REAL} ,
+			</if>
+			<if test="score != null">
+				score =  #{score,jdbcType=REAL} ,
+			</if>
+			<if test="description != null">
+				description = #{description,jdbcType=VARCHAR} ,
+			</if>
+		</set>
+		<where>
+			id = #{id}
+		</where>
+	</update>
+	
+	<!-- 删除任务根据id -->
+	<delete id="deleteAssignment" parameterType="String">
+		DELETE FROM ASSIGNMENT 
+		WHERE ID = #{id}
+	</delete>
+	
+	<!-- 根据项目编号，删除任务 -->
+	<delete id="deleteAssignmentByProjectid" parameterType="String">
+		DELETE * FROM ASSIGNMENT 
+		WHERE PROJECTID = #{projectid}
+	</delete>
+	
+	<!-- 根据学生编号，删除任务 -->
+	<delete id="deleteAssignmentByStudentid" parameterType="String">
+		DELETE * FROM ASSIGNMENT 
+		WHERE STUDENTID = #{studentid}
+	</delete>
 
 </mapper>

@@ -22,6 +22,8 @@ public class StudentAssignment {
 	
 	private Integer state;
 	
+	private Float score;
+	
 	private String studentname;
 	
 	private String studentpassword;
@@ -90,6 +92,12 @@ public class StudentAssignment {
 	public void setState(Integer state) {
 		this.state = state;
 	}
+	public Float getScore() {
+		return score;
+	}
+	public void setScore(Float score) {
+		this.score = score;
+	}
 	public String getStudentname() {
 		return studentname;
 	}
@@ -136,9 +144,9 @@ public class StudentAssignment {
 	public String toString() {
 		return "StudentAssignment [assignmentid=" + assignmentid + ", assignmentname=" + assignmentname + ", projectid="
 				+ projectid + ", studentid=" + studentid + ", progress=" + progress + ", starttime=" + starttime
-				+ ", endtime=" + endtime + ", finishtime=" + finishtime + ", state=" + state + ", studentname="
-				+ studentname + ", studentpassword=" + studentpassword + ", studentsfzh=" + studentsfzh
-				+ ", studentsex=" + studentsex + ", studentgrade=" + studentgrade + ", studentclassid=" + studentclassid
-				+ ", studentclassname=" + studentclassname + "]";
+				+ ", endtime=" + endtime + ", finishtime=" + finishtime + ", state=" + state + ", score=" + score
+				+ ", studentname=" + studentname + ", studentpassword=" + studentpassword + ", studentsfzh="
+				+ studentsfzh + ", studentsex=" + studentsex + ", studentgrade=" + studentgrade + ", studentclassid="
+				+ studentclassid + ", studentclassname=" + studentclassname + "]";
 	}
 }

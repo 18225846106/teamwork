@@ -5,18 +5,18 @@
 	
 	<sql id="assignment">
 		id as assignmentid,`name` as assignmentname,projectid as projectid,studentid as studentid,
-		progress as progress,starttime as starttime,endtime as endtime,finishtime as finishtime, state as state
+		progress as progress,starttime as starttime,endtime as endtime,finishtime as finishtime, state as state, score as score 
 	</sql>
 	
 	<!--  -->
 	<sql id="studentassignmentall">
-		assignmentid , assignmentname , projectid , studentid , progress , starttime , endtime , finishtime , state ,
+		assignmentid , assignmentname , projectid , studentid , progress , starttime , endtime , finishtime , state , score ,
 		 `name` as studentname , `password` as studentpassword , sfzh as studentsfzh , sex as studentsex , grade as studentgrade , classid as studentclassid , classname as studentclassname
 	</sql>
 	
 	<!--  -->
 	<sql id="studentassignment">
-		assignmentid , assignmentname , projectid , studentid , progress , starttime , endtime , finishtime , state ,
+		assignmentid , assignmentname , projectid , studentid , progress , starttime , endtime , finishtime , state ,score ,
 		 `name` as studentname , sex as studentsex , grade as studentgrade , classid as studentclassid , classname as studentclassname
 	</sql>
 	
@@ -39,10 +39,10 @@
 		<where>
 			t.courseid = #{courseid} and t.id = ts.teamid
 		</where>
-		ORDER BY teamid ASC
+		ORDER BY teamid ASC , `character` ASC
 	</select>
 	
-	<!-- 在findTtsByCourseid基础上加商学生信息 -->
+	<!-- 在findTtsByCourseid基础上加上学生信息 -->
 	<select id="findTtssByCourseid" parameterType="String" resultType="Teamteamstudentstudent">
 		SELECT * FROM 
 			( SELECT t.id as teamid, t.name as teamname, ts.studentid as studentid, ts.`character` as `character` 
@@ -101,5 +101,56 @@
 		</where>
 		order by classid desc
 	</select>
+	
+	<!-- 查找，项目 所在小组的成员id，team_student -->
+	<select id="findTeamstudentByProjectid" parameterType="String" resultType="Teamstudent">
+		select * from team_student 
+		<where>
+			teamid = (select tid from project where id = #{projectid})
+		</where>
+	</select>
+	
+	<!-- 插入小组分数，通过teamid，到team-student找到studentid，courseid，到course-student表修改teamscore -->
+	<update id="updateCoursestudentTeamscoreByTeam" parameterType="Team">
+		update course_student cs , (select * from team_student where teamid = #{id}) ts 
+		<set>
+			<if test="score != null">
+				cs.teamscore = #{score}
+			</if>
+		</set>
+		<where>
+			cs.courseid = ts.courseid and cs.studentid = ts.studentid
+		</where>
+	</update>
+	
+	<!-- 插入小组分数同时个人分等同于小祖分，通过teamid，到team-student找到studentid，courseid，到course-student表修改teamscore -->
+	<update id="updateCoursestudentTpscoreByTeam" parameterType="Team">
+		update course_student cs , (select * from team_student where teamid = #{id}) ts 
+		<set>
+			<if test="score != null">
+				cs.teamscore = #{score},
+			</if>
+			<if test="score != null">
+				cs.personscore = #{score},
+			</if>
+		</set>
+		<where>
+			cs.courseid = ts.courseid and cs.studentid = ts.studentid
+		</where>
+	</update>
+	
+	<!-- 查询学生的所有课程和老师信息 -->
+	<!-- <select id="findTeachercourseByCourseid" parameterType="String" resultType="Teachercourse">
+		
+	</select> -->
+	<select id="findTeachercourseByStudentid" parameterType="String" resultType="Teachercourse">
+		select teacher.id as teacherid ,teacher.code as teachercode, teacher.name as teachername  , teacher.academy as teacheracademy , teacher.sex as teachersex , teacher.sfzh as teachersfzh ,
+		 course.id as courseid , course.code as coursecode ,course.name as coursename ,course.tid as coursetid ,course.time as coursetime ,course.addr as courseaddr ,course.group as coursegroup
+		  from Teacher teacher, Course course 
+		where teacher.id = course.tid and course.id in (select courseid from course_student where studentid = #{studentid})
+	</select>
+	
+	<!-- 学生课程详情页,查找小组成员,首先找teamid -->
+	<!-- <select id=""></select> -->
 	
 </mapper>

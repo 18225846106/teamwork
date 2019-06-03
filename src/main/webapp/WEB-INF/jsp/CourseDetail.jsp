@@ -27,6 +27,7 @@
 	//全页变量courseid
 	var courseid = <%=request.getAttribute("courseid")%>;
 	var pid;//全页通用模态框使用项目id
+	var teamlist;//所有小组列表
 	//页面加载完成后，发送ajax请求，得到分页数据
 	$(function(){
 		//班级的id
@@ -41,6 +42,8 @@
 		ajaxcourse(courseid);
 		//第三步：填充班级项目信息
 		ajaxproject(courseid);
+		//第四步：填充队伍列表
+		getteams(courseid);
 	});
 	
 	//ajax查询学生信息
@@ -223,8 +226,9 @@
 			}
 			//操作
 			tr.append($("<td></td>")
-					.append("<input id=\""+tts.studentid+"\" type=\"button\" class=\"btn brn-default\" style=\"padding: 3px 12px;\" value=\"查看\" onclick=\"toCourseStudentAssignment('"+<%=request.getAttribute("courseid")%>+"','"+tts.studentid+"')\">")
-					.attr("title","学生在班级内的任务"));
+					.append("<input id=\""+tts.studentid+"\" type=\"button\" class=\"btn brn-default\" style=\"padding: 3px 5px;margin: 0px 5px;\" value=\"查看个人\" onclick=\"toCourseStudentAssignment('"+<%=request.getAttribute("courseid")%>+"','"+tts.studentid+"')\">")
+					//.attr("title","学生在班级内的任务")
+					.append($("<input></input>").addClass("btn brn-default").attr({"style":"padding: 3px 5px;margin: 0px 5px;","value":"查看小组","type":"button","onclick":"toCourseTeam('"+tts.teamid+"')"})));
 			//增添新的一行
 			tbody.append(tr);
 		});
@@ -247,8 +251,9 @@
 			var trid = $("<tr></tr>").append($("<td></td>").text("项目编号:")).append($("<td></td>").text(codetoolang(project.id)).attr({"style":"color: blue;","onclick":"toProjectAssignment('"+project.id+"')","title":project.id})).attr({"title":"项目内任务详情"});
 			//项目名称
 			var trname = $("<tr></tr>").append($("<td></td>").text("项目名称:")).append($("<td></td>").text(project.name));
-			//任务状态，状态不同，修改样式
-			if (project.state == 1) {
+			//项目状态，状态不同，修改样式
+			var trstate = $("<tr></tr>").append($("<td></td>").text("项目状态:")).append($("<td></td>").append(getstate(project.endtime,project.finishtime,project.progress)));
+			/* if (project.state == 1) {
 				var trstate = $("<tr></tr>").append($("<td></td>").text("项目状态:")).append($("<td></td>").text("未开始"));
 			}
 			else if (project.state == 2) {
@@ -259,6 +264,12 @@
 			}
 			else if (project.state == 4) {
 				var trstate = $("<tr></tr>").append($("<td></td>").text("项目状态:")).append($("<td></td>").text("逾期").attr("style","color: #ff1717;"));
+			} */
+			//项目分数
+			if (project.score != null && project.score != "") {
+				var trscore = $("<tr></tr>").append($("<td></td>").text("项目分数:")).append($("<td></td>").text(project.score));
+			} else {
+				var trscore = $("<tr></tr>").append($("<td></td>").text("项目分数:")).append($("<td></td>").text("----"));
 			}
 			//任务开始时间
 			var trstarttime = $("<tr></tr>").append($("<td></td>").text("开始时间:")).append($("<td></td>").text(getdate(project.starttime)));
@@ -276,7 +287,7 @@
 			}
 			//进度状态
 			//one
-			var tdone = $("<td></td>").append(trid).append(trname).append(trstate);
+			var tdone = $("<td></td>").append(trid).append(trname).append(trstate).append(trscore);
 			//two
 			var tdtwo = $("<td></td>").append(trstarttime).append(trsendtime).append(trsfinishime);
 			//three///进度条//返回tr行
@@ -296,7 +307,7 @@
 						.append($("<td></td>").text("分配到小组编号:"+codetoolang(project.tid)))//是否给一个按钮如果项目没开始,可以重新分配
 				if (project.state == 1) {
 					trbut.append($("<td></td>")
-							.append($("<button></button>").attr({"type":"button","data-toggle":"modal","data-target":"#AllotProjectModal","style":"padding: 2px;font-size: 1em;","title":"项目未开始可重新分配","onclick":"getteam('"+project.id+"');"}).addClass("btn btn-default btn-lg").text("分配项目"))
+							.append($("<button></button>").attr({"type":"button","data-toggle":"modal","data-target":"#AllotProjectModal","style":"padding: 2px;font-size: 1em;","title":"项目未开始可重新分配","onclick":"getteam('"+project.id+"');"}).addClass("btn btn-default btn-lg").text("重新指派"))
 							.append($("<button></button>").attr({"type":"button","data-toggle":"modal","data-target":"#EditProjectModal","style":"padding: 2px;font-size: 1em;","onclick":"editProject('"+project.id+"');"}).addClass("btn btn-default btn-lg").text("编辑项目"))
 							.append($("<button></button>").attr({"type":"button","style":"padding: 2px;font-size: 1em;","onclick":"deleteProject('"+project.id+"','"+project.name+"');"}).addClass("btn btn-default").text("删除项目")))
 				}
@@ -308,6 +319,7 @@
 						//.append($("<td></td>")
 						//		.append($("<button></button>").attr({"type":"button","data-toggle":"modal","data-target":"#EditProjectModal","style":"padding: 2px;font-size: 1em;","onclick":"editProject('"+project.id+"');"}).addClass("btn btn-default btn-lg").text("编辑项目"))
 						//		.append($("<button></button>").attr({"type":"button","style":"padding: 2px;font-size: 1em;","onclick":"deleteProject('"+project.id+"','"+project.name+"');"}).addClass("btn btn-default").text("删除项目")))
+				trbut.append($("<td></td>"))
 				tbody.append(trbut);
 			}else {//当项目没有分配到组//给出按钮，弹出模态框
 				var trbut = $("<tr></tr>")
@@ -315,8 +327,10 @@
 						.append($("<td></td>")
 								.append($("<button></button>").attr({"type":"button","data-toggle":"modal","data-target":"#EditProjectModal","style":"padding: 2px;font-size: 1em;","onclick":"editProject('"+project.id+"');"}).addClass("btn btn-default btn-lg").text("编辑项目"))
 								.append($("<button></button>").attr({"type":"button","style":"padding: 2px;font-size: 1em;","onclick":"deleteProject('"+project.id+"','"+project.name+"');"}).addClass("btn btn-default").text("删除项目")))
+				trbut.append($("<td></td>"))
 				tbody.append(trbut);
 			}
+			//tbody.append($("<tr></tr>").append($("<td></td>").text("项目参数分:"+"----")).append($("<td></td>")).append($("<td></td>")))
 			//将tbody加入到表格
 			table.append(tbody);
 			//table-to-div//表格填充到页面
@@ -414,14 +428,65 @@
 	//修改指派模态框内输入框和下拉选项选择的内容一致
 	function choseteam() {
 		var chosed = $("#allotteams").find("option:selected").text();//.val();
-		console.log("chosed:"+chosed);
+		console.log("chosed:"+chosed+"  "+$("#allotteams").val());
 		$("#allotteamchose").val(chosed);
+		var chosedlist = $("#allotteamlist").find("option:selected").text();//.val();
+		console.log("chosedlist:"+chosedlist+"  "+$("#allotteamlist").val());
+		$("#allotteamlistchose").val(chosedlist);
 	}
 	
 	//加载小组信息到分配模态框，填充下拉选项
 	function getteam(projectid) {
 		pid = projectid;//为模态框指配项目的全页变量赋值
 		console.log("pid:"+pid);
+		//console.log(teamlist);
+		
+		/* $.ajax({
+			type:"post",
+			dataType:"json",
+			data:{courseid:courseid},
+			url:"/teamwork/team/findteambycourseid",
+			success:function(data){
+				console.log("接入/teamwork/team/findteambycourseid");
+				if (data.code == "100") {
+					console.log(data.info);
+				}
+				if (data.code == "200") {
+					console.log(data.info);
+					teamlist = data.teams;
+					console.log(teamlist);
+					//填充选项
+					$("#allotteams").empty();//填充前先清空
+					$("#allotteamchose").val("");
+					$("#allotteams").append($("<option></option>").attr({"value":"","style":"color:#c2c2c2;"}).text("---请选择---"));
+					$.each(data.teams,function(index,team){
+						//<option value="team.id">team.name</option>
+						if (team.name == null || team.name == "") {
+							$("#allotteams").append($("<option></option>").attr({"value":team.id}).text(codetoolang(team.id)));
+						} else {
+							$("#allotteams").append($("<option></option>").attr({"value":team.id}).text(team.name));
+						}
+					});
+					/* $("#allotteamlist").empty();//填充前先清空
+					$("#allotteamlistchose").val("");
+					$("#allotteamlist").append($("<option></option>").attr({"value":"","style":"color:#c2c2c2;"}).text("---请选择---"));
+					$.each(data.teams,function(index,team){
+						//<option value="team.id">team.name</option>
+						if (team.name == null || team.name == "") {
+							$("#allotteamlist").append($("<option></option>").attr({"value":team.id}).text(codetoolang(team.id)));
+						} else {
+							$("#allotteamlist").append($("<option></option>").attr({"value":team.id}).text(team.name));
+						}
+					}); ****
+				}
+			},
+			error:function(data){
+				console.log("error:"+data);
+			}
+		}); */
+	}
+	//第四步
+	function getteams(courseid) {
 		$.ajax({
 			type:"post",
 			dataType:"json",
@@ -434,16 +499,29 @@
 				}
 				if (data.code == "200") {
 					console.log(data.info);
+					teamlist = data.teams;
+					console.log(teamlist);
 					//填充选项
 					$("#allotteams").empty();//填充前先清空
 					$("#allotteamchose").val("");
 					$("#allotteams").append($("<option></option>").attr({"value":"","style":"color:#c2c2c2;"}).text("---请选择---"));
-					$.each(data.teams,function(index,team){
+					$.each(teamlist,function(index,team){
 						//<option value="team.id">team.name</option>
 						if (team.name == null || team.name == "") {
 							$("#allotteams").append($("<option></option>").attr({"value":team.id}).text(codetoolang(team.id)));
 						} else {
 							$("#allotteams").append($("<option></option>").attr({"value":team.id}).text(team.name));
+						}
+					});
+					$("#allotteamlist").empty();//填充前先清空
+					$("#allotteamlistchose").val("");
+					$("#allotteamlist").append($("<option></option>").attr({"value":"","style":"color:#c2c2c2;"}).text("---请选择---"));
+					$.each(teamlist,function(index,team){
+						//<option value="team.id">team.name</option>
+						if (team.name == null || team.name == "") {
+							$("#allotteamlist").append($("<option></option>").attr({"value":team.id}).text(codetoolang(team.id)));
+						} else {
+							$("#allotteamlist").append($("<option></option>").attr({"value":team.id}).text(team.name));
 						}
 					});
 				}
@@ -552,32 +630,50 @@
 		});
 	}
 	
+	function printteamlist(){
+		console.log(teamlist);
+	}
+	//清空模态框
+	function clearcreatproject(){
+		$("#c_projectcode").val("");
+		$("#c_projectname").val("");
+		$("#c_starttime").val("");
+		$("#c_endtime").val("");
+		$("#c_description").val("");
+	}
 	
 </script>
 </head>
 <body>
 
 	<!-- 页面布局的头部 -->
-	<div id="head" style="height: 200px;background-image: url(/teamwork/static/img/headcartoon.gif);background-repeat: no-repeat;background-position:center;">
-		<div style="display: flex;height:  2em;justify-content: flex-end;justify-items: center;width: 100%;">
-			<div style="min-width: 50px;"><p>欢迎：</p></div>
-			<div id="customer" style="min-width: 50px"><p><%=session.getAttribute("loginname") %></p></div>
-			<div style="min-width: 50px;color: blue;font: inherit;" onclick="loginout();"><p>退出!</p></div>
+	<div id="head" style="padding: 1px;">
+		<!-- 两端排列 -->
+		<div style="display: flex;justify-content: space-between;">
+			<div style="display: flex;justify-content: flex-start;justify-items: center;width: 50%;">
+				<!-- 标题图片 -->
+				<img alt="" src="/teamwork/static/img/headcharacter.png">
+			</div>
+			<div style="display: flex;height:  2em;justify-content: flex-end;justify-items: center;width: 50%;">
+				<div style="min-width: 3em;"><p>欢迎:</p></div>
+				<div id="customer" style="min-width: 50px"><p><%=session.getAttribute("loginname") %> !</p></div>
+				<div style="min-width: 50px;color: blue;font: inherit;" onclick="loginout();"><p>退出!</p></div>
+			</div>
 		</div>
-		<!-- <img alt="xiatongtoubutupian" src="/teamwork/static/img/headcartoon.gif"> -->
 	</div>
 	
 	<!-- 中间体 -->
 	<div style="display: flex;width: 100%;">
 		
-		<div style="width: 20%;"></div>
+		<div style="width: 20%;border: 1px solid #e4e2e2;"></div>
 		<!-- 切片页面 -->
-		<div style="width: 80%;">
+		<div style="width: 80%;border-top: 1px solid #e4e2e2;">
+		
 			<!-- Nav tabs -->
 			<ul id="myTabs" class="nav nav-tabs" role="tablist">
-				<li role="presentation" class="active"><a href="#studentstab" aria-controls="studentstab" role="tab" data-toggle="tab">students</a></li>
-				<li role="presentation"><a href="#groupstab" aria-controls="groupstab" role="tab" data-toggle="tab">groups</a></li>
-				<li role="presentation"><a href="#projectstab" aria-controls="projectstab" role="tab" data-toggle="tab">projects</a></li>
+				<li role="presentation" class="active"><a href="#studentstab" aria-controls="studentstab" role="tab" data-toggle="tab">学生列表</a></li>
+				<li role="presentation"><a href="#groupstab" aria-controls="groupstab" role="tab" data-toggle="tab">小组列表</a></li>
+				<li role="presentation"><a href="#projectstab" aria-controls="projectstab" role="tab" data-toggle="tab">项目列表</a></li>
 				<!-- <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Messages</a></li>
 				<li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Settings</a></li> -->
 			</ul>
@@ -588,7 +684,7 @@
 					<!-- 学生展示面板外包 -->
 					<div class="StudentList">
 						<!-- 学生信息面板 -->
-						<div class="container" style="overflow: auto;">
+						<div class="container" style="overflow: auto;width: 100%;">
 							<!-- 表头信息 -->
 							<div class="row">
 								<p>班级学生信息</p>
@@ -626,7 +722,7 @@
 					<!-- 分组展示面板外包 -->
 					<div class="StudentGroup">
 						<!-- 分组展示面板 -->
-						<div class="container">
+						<div class="container" style="width: 100%;">
 							<!-- 表头信息 -->
 							<div class="row">
 								<div id="newteams" style="display: flex;justify-content: space-between;margin: 0px 15px;padding: 2px;">
@@ -680,14 +776,14 @@
 					<!-- 班级项目信息展示 -->
 					<div class="ProjectList">
 						<!-- 项目展示面板 -->
-						<div class="container">
+						<div class="container" style="width: 100%;">
 							<!-- 表头信息 -->
 							<div class="row">
 								<div style="display: flex;justify-content: space-between;margin: 0px 15px;padding: 2px;">
 									<p>班级项目信息</p>
 									<!-- 创建项目 -->
 									<!-- Button trigger modal -->
-									<button type="button" class="btn btn-default btn-lg" style="padding: 1px;font-size: 1em;" data-toggle="modal" data-target="#CreatProjectModal">
+									<button type="button" class="btn btn-default btn-lg" style="padding: 1px;font-size: 1em;" data-toggle="modal" data-target="#CreatProjectModal" onclick="clearcreatproject()">
 										新建项目
 									</button>
 								</div>
@@ -837,7 +933,40 @@
 						</div>
 						<div class="form-group">
 							<label for="message-text" class="control-label">描述信息:</label>
-							<textarea class="form-control" id="c_description"></textarea>
+							<textarea class="form-control" id="c_description" style="min-height: 7em;overflow-y: auto;"></textarea>
+						</div>
+						<!-- 基本项目指派到所有团队 -->
+						<div class="form-group">
+							<input id="createbaseproject" type="checkbox">基本项目,创建到所有组
+						</div>
+						<!-- 指派到小组 -->
+						<div style="display: flex;width: 100%;">
+							<div style="width: 6em;padding-right: 10px;"><label>指派小组:</label></div>
+							<div>
+								<span style="absolute;margin-top:-12px;">
+								    <table cellspacing="0" cellpadding="0" width="100%" border="0">
+								        <tr>
+								            <td align="left">
+								                <span style="position:absolute;border:1pt solid #c1c1c1;overflow:hidden;width:188px;height:19px;clip:rect(-1px 190px 190px 170px);">
+								                    <select name="allotteamlist" id="allotteamlist" style="width:190px;height:20px;margin:-2px;" onchange="choseteam();" onclick="getteam()">
+									                    <!-- <option value="" style="color:#c2c2c2;">---请选择---</option> -->
+									                    <!-- getteam()函数填充 -->
+									                    <%-- <c:forEach items="${teamlist}" var="team">
+									                    	<option value="${team.id}" style="color:#c2c2c2;">${team.name}</option>
+									                    </c:forEach> --%>
+								                    </select>
+								                </span>
+								                <span style="position:absolute;border-top:1pt solid #c1c1c1;border-left:1pt solid #c1c1c1;border-bottom:1pt solid #c1c1c1;width:170px;height:19px;">
+								                    <input type="text" name="allotteamlistchose" id="allotteamlistchose" placeholder="可选择也可输入的下拉框" value="" style="width:170px;height:15px;border:0pt;">
+								                </span>
+								            </td>
+								            <td>
+								            	<label id="allotteamremind"></label>
+								            </td>
+								        </tr>
+								    </table>
+								</span>	
+							</div>
 						</div>
 					</form>
 				</div>

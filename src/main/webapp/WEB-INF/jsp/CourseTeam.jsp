@@ -200,7 +200,8 @@
 			//项目名称
 			var trname = $("<tr></tr>").append($("<td></td>").text("项目名称:")).append($("<td></td>").text(project.name));
 			//任务状态，状态不同，修改样式
-			if (project.state == 1) {
+			var trstate = $("<tr></tr>").append($("<td></td>").text("项目状态:")).append($("<td></td>").append(getstate(project.endtime,project.finishtime,project.progress)));
+			/* if (project.state == 1) {
 				var trstate = $("<tr></tr>").append($("<td></td>").text("项目状态:")).append($("<td></td>").text("未开始"));
 			}
 			else if (project.state == 2) {
@@ -211,13 +212,18 @@
 			}
 			else if (project.state == 4) {
 				var trstate = $("<tr></tr>").append($("<td></td>").text("项目状态:")).append($("<td></td>").text("逾期").attr("style","color: #ff1717;"));
-			}
+			} */
 			//任务开始时间
 			var trstarttime = $("<tr></tr>").append($("<td></td>").text("开始时间:")).append($("<td></td>").text(getdate(project.starttime)));
 			//任务截止时间
 			var trsendtime = $("<tr></tr>").append($("<td></td>").text("截止时间:")).append($("<td></td>").text(getdate(project.endtime)));
 			//任务结束时间
-			if (project.state == 3 || project.state == 4) {
+			if (project.finishtime == null || project.finishtime == "") {
+				var trsfinishime = $("<tr></tr>").append($("<td></td>").text("结束时间:")).append($("<td></td>").text("----"));
+			} else {
+				var trsfinishime = $("<tr></tr>").append($("<td></td>").text("结束时间:")).append($("<td></td>").text(getdate(project.finishtime)));
+			}
+			/* if (project.state == 3 || project.state == 4) {
 				var trsfinishime = $("<tr></tr>").append($("<td></td>").text("结束时间:")).append($("<td></td>").text(getdate(project.finishtime)));
 			}
 			else if (project.state == 1) {
@@ -225,27 +231,27 @@
 			}
 			else if (project.state == 2) {
 				var trsfinishime = $("<tr></tr>").append($("<td></td>").text("结束时间:")).append($("<td></td>").text("----"));
-			}
+			} */
 			//进度状态
-			//var progress = $("<tr></tr>").append($("<td></td>").append($("<div></div>").append(drawball())));
 			//one
 			var tdone = $("<td></td>").append(trid).append(trname).append(trstate);
 			//two
 			var tdtwo = $("<td></td>").append(trstarttime).append(trsendtime).append(trsfinishime);
 			//three///进度条
-			//var tdthree = $("<td></td>").append($("<div></div>").addClass("ProgressDiv").append(drawball(project.id)));/////.append(progress);
 			var trthree = drawprogress(project.progress);
+			//分数
+			if (project.score == null || project.score == "") {
+				var trfour = $("<tr></tr>").append($("<td></td>").text("项目分数:"+"----")).append($("<td></td>")).append($("<td></td>"));
+			} else {
+				var trfour = $("<tr></tr>").append($("<td></td>").text("项目分数:"+project.score)).append($("<td></td>")).append($("<td></td>"));
+			}
 			//all
 			var onetwo = $("<tr></tr>")
-			//.attr({"style":"display: flex"})
 			.append(tdone)
-			//.append($("<div></div>").attr({"style":"width: 30%;"}).append(tdone))
 			.append(tdtwo)
-			//.append($("<div></div>").attr({"style":"width: auto;"}).append(tdtwo))
 			.append($("<td></td>"));
-			//.append(tdthree);
 			//all-to-tbody-to-table//画出表格
-			$("<tbody></tbody>").append(onetwo).append(trthree).appendTo(table);
+			$("<tbody></tbody>").append(onetwo).append(trthree).append(trfour).appendTo(table);
 			//table-to-div//表格填充到页面
 			$("#projectlists").append(table);
 		});
@@ -281,7 +287,7 @@
 			.attr({"role":"progressbar","aria-valuenow":"60","aria-valuemin":"0","aria-valuemax":"100","style":"width: "+progress+"%;min-width: 2em;"})
 			.text(progress+"%");
 		//</div>
-		var divout = $("<div></div>").addClass("progress").append(divinner);
+		var divout = $("<div></div>").addClass("progress").attr({"style":"margin-bottom: 2px;"}).append(divinner);
 		//方式一
 		var td1 = $("<td></td>").text("项目进度:").attr("style","padding-bottom: 1px;");
 		var td2 = $("<td></td>").append(divout).attr("style","padding-bottom: 1px;");
@@ -385,26 +391,32 @@
 <body>
 
 	<!-- 页面布局的头部 -->
-	<div id="head" style="height: 200px;background-image: url(/teamwork/static/img/headcartoon.gif);background-repeat: no-repeat;background-position:center;">
-		<div style="display: flex;height:  2em;justify-content: flex-end;justify-items: center;width: 100%;">
-			<div style="min-width: 50px;"><p>欢迎：</p></div>
-			<div id="customer" style="min-width: 50px"><p><%=session.getAttribute("loginname") %></p></div>
-			<div style="min-width: 50px;color: blue;font: inherit;" onclick="loginout();"><p>退出!</p></div>
+	<div id="head" style="padding: 1px;">
+		<!-- 两端排列 -->
+		<div style="display: flex;justify-content: space-between;">
+			<div style="display: flex;justify-content: flex-start;justify-items: center;width: 50%;">
+				<!-- 标题图片 -->
+				<img alt="" src="/teamwork/static/img/headcharacter.png">
+			</div>
+			<div style="display: flex;height:  2em;justify-content: flex-end;justify-items: center;width: 50%;">
+				<div style="min-width: 3em;"><p>欢迎:</p></div>
+				<div id="customer" style="min-width: 50px"><p><%=session.getAttribute("loginname") %> !</p></div>
+				<div style="min-width: 50px;color: blue;font: inherit;" onclick="loginout();"><p>退出!</p></div>
+			</div>
 		</div>
-		<!-- <img alt="xiatongtoubutupian" src="/teamwork/static/img/headcartoon.gif"> -->
 	</div>
 	
 	<!-- 中间体 -->
 	<div style="display: flex;width: 100%;">
-	
-		<div style="width: 20%;"></div>
+		
+		<div style="width: 20%;border: 1px solid #e4e2e2;"></div>
 		<!-- 切片页面 -->
-		<div style="width: 80%;">
+		<div style="width: 80%;border-top: 1px solid #e4e2e2;">
 	
 			<!-- 展示团队人员信息 -->
 			<div class="Student">
 				<!-- 表头team -->
-				<div class="container">
+				<div class="container" style="width: 100%;">
 					<div class="row">
 						<div class="col-md-12">
 							<table id="team_table" class="table table-hover">
@@ -413,7 +425,7 @@
 					</div>
 				</div>
 				<!-- 表体students -->
-				<div class="container">
+				<div class="container" style="width: 100%;">
 					<div class="row">
 						<div class="col-md-12">
 							<table id="students_table" class="table table-hover">
@@ -425,13 +437,13 @@
 			
 			<!-- 展示团队项目信息 -->
 			<div class="StudentProject">
-				<div class="container">
+				<div class="container" style="width: 100%;">
 					<div class="row">
 						<!-- 右移一格 -->
 						<!-- <div class="col-md-1">
 						</div> -->
 						<!-- 十二分格占中间十个 -->
-						<div id="projectlists" class="col-md-10">
+						<div id="projectlists" class="col-md-12">
 							<!-- 项目列表体 -->
 							<!-- <table id="projects_table" class="table table-hover">
 							</table> -->

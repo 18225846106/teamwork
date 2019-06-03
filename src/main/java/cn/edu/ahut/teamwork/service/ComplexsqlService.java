@@ -11,6 +11,9 @@ import cn.edu.ahut.teamwork.entity.Assignment;
 import cn.edu.ahut.teamwork.entity.Student;
 import cn.edu.ahut.teamwork.entity.StudentAssignment;
 import cn.edu.ahut.teamwork.entity.Studentteamstudent;
+import cn.edu.ahut.teamwork.entity.TeacherCourse;
+import cn.edu.ahut.teamwork.entity.Team;
+import cn.edu.ahut.teamwork.entity.Teamstudent;
 import cn.edu.ahut.teamwork.entity.Teamteamstudent;
 import cn.edu.ahut.teamwork.entity.Teamteamstudentstudent;
 
@@ -88,5 +91,45 @@ public class ComplexsqlService {
 	public List<Student> findStudentByCourseidOrderByclassid(String courseid){
 		List<Student> students = complexsqlMapper.findStudentByCourseidOrderByclassid(courseid);
 		return students;
+	}
+	
+	/**
+	 * 查找，项目 所在小组的成员id，team_student
+	 * @param projectid
+	 * @return
+	 */
+	public List<Teamstudent> findTeamstudentByProjectid(String projectid){
+		List<Teamstudent> teamstudents = complexsqlMapper.findTeamstudentByProjectid(projectid);
+		return teamstudents;
+	}
+	
+	/**
+	 * 插入小组分数，通过teamid，到team-student找到studentid，courseid，到course-student表修改teamscore
+	 * @param team
+	 * @return
+	 */
+	public int updateCoursestudentTeamscoreByTeam(Team team) {
+		int result = complexsqlMapper.updateCoursestudentTeamscoreByTeam(team);
+		return result;
+	}
+	
+	/**
+	 * 插入小组分数同时个人分等同于小祖分，通过teamid，到team-student找到studentid，courseid，到course-student表修改teamscore
+	 * @param team
+	 * @return
+	 */
+	public int updateCoursestudentTpscoreByTeam(Team team) {
+		int result = complexsqlMapper.updateCoursestudentTpscoreByTeam(team);
+		return result;
+	}
+	
+	/**
+	 * 查询学生的所有课程和老师信息
+	 * @param studentid
+	 * @return
+	 */
+	public List<TeacherCourse> findTeachercourseByStudentid(String studentid){
+		List<TeacherCourse> teacherCourses = complexsqlMapper.findTeachercourseByStudentid(studentid);
+		return teacherCourses;
 	}
 }

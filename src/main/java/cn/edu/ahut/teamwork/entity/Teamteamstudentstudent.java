@@ -1,14 +1,49 @@
 package cn.edu.ahut.teamwork.entity;
 
+/**
+ * 
+ * @author Administrator
+ *
+ */
 public class Teamteamstudentstudent {
 	
 	private String teamid;//小组id
+	
+	private String teamcode;//小组编号
+	
+	private String teamname;//小组名
 
     private String studentid;//学生id
 
-    private String courseid;//课程id
+    public String getTeamcode() {
+		return teamcode;
+	}
+
+	public void setTeamcode(String teamcode) {
+		this.teamcode = teamcode;
+	}
+
+	public String getTeamname() {
+		return teamname;
+	}
+
+	public void setTeamname(String teamname) {
+		this.teamname = teamname;
+	}
+
+	public Float getTeamscore() {
+		return teamscore;
+	}
+
+	public void setTeamscore(Float teamscore) {
+		this.teamscore = teamscore;
+	}
+
+	private String courseid;//课程id
 
     private String character;//学生角色
+    
+    private Float teamscore;//小组分数
 
 	private String id;
 
@@ -124,9 +159,9 @@ public class Teamteamstudentstudent {
 
 	@Override
 	public String toString() {
-		return "Teamteamstudentstudent [teamid=" + teamid + ", studentid=" + studentid + ", courseid=" + courseid
-				+ ", character=" + character + ", id=" + id + ", name=" + name + ", password=" + password + ", sfzh="
-				+ sfzh + ", sex=" + sex + ", grade=" + grade + ", classid=" + classid + ", classname=" + classname
-				+ "]";
+		return "Teamteamstudentstudent [teamid=" + teamid + ", teamcode=" + teamcode + ", teamname=" + teamname
+				+ ", studentid=" + studentid + ", courseid=" + courseid + ", character=" + character + ", teamscore="
+				+ teamscore + ", id=" + id + ", name=" + name + ", password=" + password + ", sfzh=" + sfzh + ", sex="
+				+ sex + ", grade=" + grade + ", classid=" + classid + ", classname=" + classname + "]";
 	}
 }

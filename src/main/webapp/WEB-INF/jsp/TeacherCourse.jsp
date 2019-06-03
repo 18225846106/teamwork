@@ -40,21 +40,27 @@
 <body>
 
 	<!-- 页面布局的头部 -->
-	<div id="head" style="height: 200px;background-image: url(/teamwork/static/img/headcartoon.gif);background-repeat: no-repeat;background-position:center;">
-		<div style="display: flex;height:  2em;justify-content: flex-end;justify-items: center;width: 100%;">
-			<div style="min-width: 50px;"><p>欢迎：</p></div>
-			<div id="customer" style="min-width: 50px"><p><%=session.getAttribute("loginname") %></p></div>
-			<div style="min-width: 50px;color: blue;font: inherit;" onclick="loginout();"><p>退出!</p></div>
+	<div id="head" style="padding: 1px;">
+		<!-- 两端排列 -->
+		<div style="display: flex;justify-content: space-between;">
+			<div style="display: flex;justify-content: flex-start;justify-items: center;width: 50%;">
+				<!-- 标题图片 -->
+				<img alt="" src="/teamwork/static/img/headcharacter.png">
+			</div>
+			<div style="display: flex;height:  2em;justify-content: flex-end;justify-items: center;width: 50%;">
+				<div style="min-width: 3em;"><p>欢迎:</p></div>
+				<div id="customer" style="min-width: 50px"><p><%=session.getAttribute("loginname") %> !</p></div>
+				<div style="min-width: 50px;color: blue;font: inherit;" onclick="loginout();"><p>退出!</p></div>
+			</div>
 		</div>
-		<!-- <img alt="xiatongtoubutupian" src="/teamwork/static/img/headcartoon.gif"> -->
 	</div>
 	
 	<!-- 中间体 -->
 	<div style="display: flex;width: 100%;">
 		
-		<div style="width: 20%;"></div>
+		<div style="width: 20%;border: 1px solid #e4e2e2;"></div>
 		<!-- 切片页面 -->
-		<div style="width: 80%;">
+		<div style="width: 80%;border-top: 1px solid #e4e2e2;">
 	
 	
 <%-- 			<!-- 包含课程的容器 -->

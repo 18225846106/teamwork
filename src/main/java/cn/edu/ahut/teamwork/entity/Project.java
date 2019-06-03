@@ -24,6 +24,8 @@ public class Project {
     private Integer state;
     
     private String description;
+    
+    private Float score;
 
     public String getId() {
         return id;
@@ -113,10 +115,18 @@ public class Project {
 		this.description = description;
 	}
 
+	public Float getScore() {
+		return score;
+	}
+
+	public void setScore(Float score) {
+		this.score = score;
+	}
+
 	@Override
 	public String toString() {
 		return "Project [id=" + id + ", code=" + code + ", name=" + name + ", courseid=" + courseid + ", tid=" + tid
 				+ ", progress=" + progress + ", starttime=" + starttime + ", endtime=" + endtime + ", finishtime="
-				+ finishtime + ", state=" + state + ", description=" + description + "]";
+				+ finishtime + ", state=" + state + ", description=" + description + ", score=" + score + "]";
 	}
 }

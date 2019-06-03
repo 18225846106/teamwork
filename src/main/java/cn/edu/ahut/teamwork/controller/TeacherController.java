@@ -28,6 +28,9 @@ public class TeacherController {
 	@RequestMapping(value="/loginout")
 	public String LoginOut(HttpSession session) {
 		session.removeAttribute("LOGIN");
+		session.removeAttribute("username");
+		session.removeAttribute("loginname");
+		session.removeAttribute("role");
 		return "Login";
 	}
 	
@@ -41,12 +44,14 @@ public class TeacherController {
 			){
 		Map<String, Object> map = new HashMap<String, Object>();
 		try {
-			if (username == "" || username == null) {
+			if (username.equals("") || username == null) {
 				map.put("success", false);
+				map.put("code", "100");
 				map.put("info", "用户名不应为空");
 				map.put("type", 3);
 			}else if (password == "" || password == null) {
 				map.put("success", false);
+				map.put("code", "100");
 				map.put("info", "用户密码不应为空");
 				map.put("type", 4);
 			}else {
@@ -55,12 +60,14 @@ public class TeacherController {
 				System.out.println("student syso: "+teacher);
 				if (teacher == null) {
 					map.put("success", false);
+					map.put("code", "100");
 					map.put("info", "用户名错误");
 					map.put("username", false);
 					map.put("type", 1);
 				}
 				else if (!teacher.getPassword().equals(password)) {
 					map.put("success", false);
+					map.put("code", "100");
 					map.put("info", "密码错误");
 					map.put("password", false);
 					map.put("type", 2);
@@ -71,6 +78,8 @@ public class TeacherController {
 					map.put("type", 0);
 					session.setAttribute("LOGIN", username);
 					session.setAttribute("username", username);
+					session.setAttribute("loginname", teacher.getName());
+					session.setAttribute("role", "teacher");
 				}
 			}
 		} catch (Exception e) {

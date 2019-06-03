@@ -25,13 +25,20 @@
 
 	var studentid = <%=request.getAttribute("studentid")%>;
 	var courseid = <%=request.getAttribute("courseid")%>;
+	var role = "<%=session.getAttribute("role")%>";
 
 	$(function(){
 		var studentid = <%=request.getAttribute("studentid")%>;
 		var courseid = <%=request.getAttribute("courseid")%>;
-		//console.log("  "+${session.getAttribute("username")});
+		var role = "<%=session.getAttribute("role")%>";
+		<%-- console.log(<%=session.getAttribute("role")%>); --%>
+		//console.log("  "+${session.getAttribute("role")});
 		console.log("studentid:"+<%=request.getAttribute("studentid")%>+typeof(<%=request.getAttribute("studentid")%>));
 		console.log("courseid:"+<%=request.getAttribute("courseid")%>+typeof(<%=request.getAttribute("courseid")%>));
+		
+		if (role == "" || role == null || role == "student") {
+			$("#coursestudentpersonscorediv").hide();
+		}
 		
 		//发起请求找到该学生的信息
 		$.ajax({
@@ -177,13 +184,20 @@
 			else if (assignment.state == 2) {
 				var trsfinishime = $("<tr></tr>").append($("<td></td>").text("结束时间:")).append($("<td></td>").text("----"));
 			}
+			//任务得分
+			if (assignment.score == null || assignment.score == "") {
+				var trsscore = $("<tr></tr>").append($("<td></td>").text("任务评分:")).append($("<td></td>").text("暂无评分").attr({"title":"任务详情页修改"}));
+			}
+			else{
+				var trsscore = $("<tr></tr>").append($("<td></td>").text("任务评分:")).append($("<td></td>").text(assignment.score).attr({"title":"任务详情页修改"}));
+			}
 			//进度状态
 			//var progress = $("<tr></tr>").append($("<td></td>").text("在这个td里面画状态进度图"));//在这个td里面画状态进度图
 			/////var progress = $("<tr></tr>").append($("<td></td>").append($("<div></div>").append(drawball())));
 			//one
 			var tdone = $("<td></td>").append(trpid).append(trid).append(trname).append(trstate);
 			//two
-			var tdtwo = $("<td></td>").append(trstarttime).append(trsendtime).append(trsfinishime);
+			var tdtwo = $("<td></td>").append(trstarttime).append(trsendtime).append(trsfinishime).append(trsscore);
 			//three///进度球
 			var tdthree = $("<td></td>").append($("<div></div>").addClass("ProgressDiv").append(drawball(assignment.id)));/////.append(progress);
 			//all
@@ -288,25 +302,31 @@
 <body>
 
 	<!-- 页面布局的头部 -->
-	<div id="head" style="height: 200px;background-image: url(/teamwork/static/img/headcartoon.gif);background-repeat: no-repeat;background-position:center;">
-		<div style="display: flex;height:  2em;justify-content: flex-end;justify-items: center;width: 100%;">
-			<div style="min-width: 50px;"><p>欢迎：</p></div>
-			<div id="customer" style="min-width: 50px"><p><%=session.getAttribute("loginname") %></p></div>
-			<div style="min-width: 50px;color: blue;font: inherit;" onclick="loginout();"><p>退出!</p></div>
+	<div id="head" style="padding: 1px;">
+		<!-- 两端排列 -->
+		<div style="display: flex;justify-content: space-between;">
+			<div style="display: flex;justify-content: flex-start;justify-items: center;width: 50%;">
+				<!-- 标题图片 -->
+				<img alt="" src="/teamwork/static/img/headcharacter.png">
+			</div>
+			<div style="display: flex;height:  2em;justify-content: flex-end;justify-items: center;width: 50%;">
+				<div style="min-width: 3em;"><p>欢迎:</p></div>
+				<div id="customer" style="min-width: 50px"><p><%=session.getAttribute("loginname") %> !</p></div>
+				<div style="min-width: 50px;color: blue;font: inherit;" onclick="loginout();"><p>退出!</p></div>
+			</div>
 		</div>
-		<!-- <img alt="xiatongtoubutupian" src="/teamwork/static/img/headcartoon.gif"> -->
 	</div>
 	
 	<!-- 中间体 -->
 	<div style="display: flex;width: 100%;">
 		
-		<div style="width: 20%;"></div>
+		<div style="width: 20%;border: 1px solid #e4e2e2;"></div>
 		<!-- 切片页面 -->
-		<div style="width: 80%;">
+		<div style="width: 80%;border-top: 1px solid #e4e2e2;">
 		
 			<!-- 展示学生信息 -->
 			<div class="Student">
-				<div class="container">
+				<div class="container" style="width: 100%;">
 					<div class="row">
 						<p>学生信息</p>
 					</div>
@@ -333,7 +353,7 @@
 			
 			<!-- 展示学生在班级内的任务 -->
 			<div class="StudentAssignment">
-				<div class="container">
+				<div class="container" style="width: 100%;">
 					<div class="row">
 						<div id="AssignmentList" class="col-md-12">
 							
@@ -343,7 +363,7 @@
 			</div>
 		
 			<!-- 个人评分模块 -->
-			<div style="width: 95%;margin-top: 10px;display: flex;justify-content: space-between;">
+			<div id="coursestudentpersonscorediv" style="width: 95%;margin-top: 10px;display: flex;justify-content: space-between;">
 				<div style="display: flex;">
 					<div style="padding: 1px 4px;">
 						个人分数:

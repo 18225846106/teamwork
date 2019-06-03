@@ -371,7 +371,7 @@
 				description = #{description,jdbcType=VARCHAR} ,
 			</if>
 			<if test="score != null">
-				score = #{scor,jdbcType=REAL},
+				score = #{score,jdbcType=REAL},
 			</if>
 		</set>
 		<where>

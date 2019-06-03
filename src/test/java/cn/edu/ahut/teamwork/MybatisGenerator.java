@@ -15,7 +15,8 @@ public class MybatisGenerator {
 	
 	@Before
 	public void b() {
-		System.out.println("nn");
+		System.out.println("n^n");
+		System.out.println("生成文件!");
 	}
 	
 	@Test

@@ -7,6 +7,9 @@
 			property="courseid" />
 		<result column="studentid" jdbcType="VARCHAR"
 			property="studentid" />
+		<result column="teamscore" jdbcType="REAL" property="teamscore"/>
+		<result column="personscore" jdbcType="REAL" property="personscore"/>
+		<result column="score" jdbcType="REAL" property="score"/>
 	</resultMap>
 	<sql id="Example_Where_Clause">
 		<where>
@@ -73,7 +76,7 @@
 		</where>
 	</sql>
 	<sql id="Base_Column_List">
-		courseid, studentid
+		courseid, studentid, `group`, teamscore, personscore, score
 	</sql>
 	<select id="selectByExample"
 		parameterType="cn.edu.ahut.teamwork.entity.CoursestudentExample"
@@ -153,8 +156,93 @@
 			<include refid="Update_By_Example_Where_Clause" />
 		</if>
 	</update>
+	
+	<!-- where sql -->
+	<sql id="where_coursestudent">
+		<where>
+			<if test="courseid != null">
+				and courseid = #{courseid}
+			</if>
+			<if test="studentid != null">
+				and studentid = #{studentid}
+			</if>
+			<if test="group != null">
+				and `group` = #{group}
+			</if>
+			<if test="teamscore != null">
+				and teamscore = #{teamscore}
+			</if>
+			<if test="personscore != null">
+				and personscore = #{personscore}
+			</if>
+			<if test="score != null">
+				and score = #{score}
+			</if>
+		</where>
+	</sql>
+	
+	<!-- set slq -->
+	<sql id="set_coursestudent">
+		<set>
+			<if test="courseid != null">
+				courseid = #{courseid},
+			</if>
+			<if test="studentid != null">
+				 studentid = #{studentid},
+			</if>
+			<if test="group != null">
+				 `group` = #{group},
+			</if>
+			<if test="teamscore != null">
+				 teamscore = #{teamscore},
+			</if>
+			<if test="personscore != null">
+				 personscore = #{personscore},
+			</if>
+			<if test="score != null">
+				 score = #{score},
+			</if>
+		</set>
+	</sql>
+	
+	<!-- 插入 coursestudent 数据 -->
+	<insert id="insertCoursestudent" parameterType="Coursestudent">
+		insert into course_student (courseid, studentid, `group`, teamscore, personscore, score)
+		values (#{courseid,jdbcType=VARCHAR}, #{studentid,jdbcType=VARCHAR}, 
+		#{group,jdbcType=INTEGER}, #{teamscore,jdbcType=REAL}, 
+		#{personscore,jdbcType=REAL}, #{score,jdbcType=REAL})
+	</insert>
+	
+	<!-- 插入 coursestudent 数据 选择列 -->
+	<insert id="insertCoursestudentSelect" parameterType="Coursestudent">
+		insert into course_student 
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="courseid != null">
+				courseid,
+			</if>
+			<if test="studentid != null">
+				 studentid,
+			</if>
+			<if test="group != null">
+				 `group`,
+			</if>
+			<if test="teamscore != null">
+				 teamscore,
+			</if>
+			<if test="personscore != null">
+				 personscore,
+			</if>
+			<if test="score != null">
+				 score,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			
+		</trim>
+	</insert>
 
-	<select id="findStudentByCourseId" parameterType="String" resultType="Coursestudent">
+	<!-- 根据课程号查询班级学生表信息 -->
+	<select id="findCoursestudentByCourseId" parameterType="String" resultType="Coursestudent">
 		SELECT * 
 		FROM COURSE_STUDENT 
 		<where>
@@ -164,5 +252,138 @@
 		</where>
 		ORDER BY STUDENTID ASC
 	</select>
+	
+	<!--  根据课程id，学生id，精确定位查找 -->
+	<select id="findCoursestudentByCsid" parameterType="Coursestudent" resultType="Coursestudent">
+		select * from course_student
+		<where>
+			<if test="courseid != null">
+				and courseid = #{courseid}
+			</if>
+			<if test="studentid != null">
+				and studentid = #{studentid}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 根据 班级学生实体 查询 班级学生表 -->
+	<select id="findCoursestudent" parameterType="Coursestudent" resultType="Coursestudent">
+		select * 
+		from course_student 
+		<where>
+			<if test="courseid != null">
+				and courseid = #{courseid}
+			</if>
+			<if test="studentid != null">
+				and studentid = #{studentid}
+			</if>
+			<if test="group != null">
+				and `group` = #{group}
+			</if>
+			<if test="teamscore != null">
+				and teamscore = #{teamscore}
+			</if>
+			<if test="personscore != null">
+				and personscore = #{personscore}
+			</if>
+			<if test="score != null">
+				and score = #{score}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 根据 班级学生实体 修改 班级学生表 -->
+	<update id="updateCoursestudent" parameterType="Coursestudent">
+		update course_student 
+		<set>
+			<if test="courseid != null">
+				courseid = #{courseid},
+			</if>
+			<if test="studentid != null">
+				 studentid = #{studentid},
+			</if>
+			<if test="group != null">
+				 `group` = #{group},
+			</if>
+			<if test="teamscore != null">
+				 teamscore = #{teamscore},
+			</if>
+			<if test="personscore != null">
+				 personscore = #{personscore},
+			</if>
+			<if test="score != null">
+				 score = #{score},
+			</if>
+		</set>
+		<where>
+			<if test="courseid != null">
+				and courseid = #{courseid}
+			</if>
+			<if test="studentid != null">
+				and studentid = #{studentid}
+			</if>
+			<if test="group != null">
+				and `group` = #{group}
+			</if>
+			<if test="teamscore != null">
+				and teamscore = #{teamscore}
+			</if>
+			<if test="personscore != null">
+				and personscore = #{personscore}
+			</if>
+			<if test="score != null">
+				and score = #{score}
+			</if>
+		</where>
+	</update>
+	
+	<!-- 更新班级学生分数,courseid，studentid -->
+	<update id="updateCoursestudentScore" parameterType="Coursestudent">
+		update course_student 
+		<set>
+			<if test="teamscore != null">
+				 teamscore = #{teamscore},
+			</if>
+			<if test="personscore != null">
+				 personscore = #{personscore},
+			</if>
+			<if test="score != null">
+				 score = #{score},
+			</if>
+		</set>
+		<where>
+			<if test="courseid != null">
+				and courseid = #{courseid}
+			</if>
+			<if test="studentid != null">
+				and studentid = #{studentid}
+			</if>
+		</where>
+	</update>
+	
+	<!-- 删除 coursestudent 数据 -->
+	<delete id="deleteCoursestudent" parameterType="Coursestudent">
+		delete from course_student 
+		<where>
+			<if test="courseid != null">
+				and courseid = #{courseid}
+			</if>
+			<if test="studentid != null">
+				and studentid = #{studentid}
+			</if>
+			<if test="group != null">
+				and `group` = #{group}
+			</if>
+			<if test="teamscore != null">
+				and teamscore = #{teamscore}
+			</if>
+			<if test="personscore != null">
+				and personscore = #{personscore}
+			</if>
+			<if test="score != null">
+				and score = #{score}
+			</if>
+		</where>
+	</delete>
 
 </mapper>

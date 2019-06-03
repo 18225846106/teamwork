@@ -48,4 +48,34 @@ public class AssignmentService {
 		List<Assignment> assignments = complexsqlMapper.findAssignmentByCsid(courseid, studentid);
 		return assignments;
 	}
+	
+	//全属性插入新建一个任务
+	public int insertAssignment(Assignment assignment) {
+		int result = assignmentMapper.insertAssignment(assignment);
+		return result;
+	}
+	
+	//根据id修改任务的信息
+	public int updateAssignment(Assignment assignment) {
+		int result = assignmentMapper.updateAssignment(assignment);
+		return result;
+	}
+	
+	//删除任务根据id
+	public int deleteAssignment(String assignmentid) {
+		int result = assignmentMapper.deleteAssignment(assignmentid);
+		return result;
+	}
+	
+	//根据项目编号，删除任务
+	public int deleteAssignmentByProjectid(String projectid) {
+		int result = assignmentMapper.deleteAssignmentByProjectid(projectid);
+		return result;
+	}
+	
+	//根据学生编号，删除任务
+	public int deleteAssignmentByStudentid(String studentid) {
+		int result = assignmentMapper.deleteAssignmentByStudentid(studentid);
+		return result;
+	}
 }

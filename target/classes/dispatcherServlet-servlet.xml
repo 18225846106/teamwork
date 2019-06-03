@@ -80,7 +80,7 @@
 			
 			<!-- 测试时放过的路由 -->
 			<mvc:exclude-mapping path="/student/login1"/>
-			<mvc:exclude-mapping path="/course/**"/>
+			<!-- <mvc:exclude-mapping path="/course/**"/> -->
 			<!-- 放过测试页面 -->
 			<mvc:exclude-mapping path="/jsp/**"/>
 			<!-- <mvc:exclude-mapping path="/jump/studentmain"/> -->

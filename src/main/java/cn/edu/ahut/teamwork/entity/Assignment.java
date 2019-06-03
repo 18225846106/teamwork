@@ -6,6 +6,8 @@ public class Assignment {
     private String id;
 
     private String name;
+    
+    private String code;
 
     private String projectid;
 
@@ -20,6 +22,14 @@ public class Assignment {
     private Date finishtime;
 
     private Integer state;
+    
+    private String studentscore;
+    
+    private Float teacherscore;
+    
+    private Float score;
+    
+    private String description;
 
     public String getId() {
         return id;
@@ -37,7 +47,15 @@ public class Assignment {
         this.name = name == null ? null : name.trim();
     }
 
-    public String getProjectid() {
+    public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public String getProjectid() {
         return projectid;
     }
 
@@ -92,4 +110,44 @@ public class Assignment {
     public void setState(Integer state) {
         this.state = state;
     }
+
+	public String getStudentscore() {
+		return studentscore;
+	}
+
+	public void setStudentscore(String studentscore) {
+		this.studentscore = studentscore;
+	}
+
+	public Float getTeacherscore() {
+		return teacherscore;
+	}
+
+	public void setTeacherscore(Float teacherscore) {
+		this.teacherscore = teacherscore;
+	}
+
+	public Float getScore() {
+		return score;
+	}
+
+	public void setScore(Float score) {
+		this.score = score;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	@Override
+	public String toString() {
+		return "Assignment [id=" + id + ", name=" + name + ", code=" + code + ", projectid=" + projectid
+				+ ", studentid=" + studentid + ", progress=" + progress + ", starttime=" + starttime + ", endtime="
+				+ endtime + ", finishtime=" + finishtime + ", state=" + state + ", studentscore=" + studentscore
+				+ ", teacherscore=" + teacherscore + ", score=" + score + ", description=" + description + "]";
+	}
 }

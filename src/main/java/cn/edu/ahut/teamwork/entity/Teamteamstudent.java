@@ -1,6 +1,7 @@
 package cn.edu.ahut.teamwork.entity;
 
 /**
+ * team team_student
  * 课程详情，学生分组
  * @author Administrator
  *
@@ -9,9 +10,13 @@ public class Teamteamstudent {
 	
 	private String teamid;
 	
+	private String teamscode;
+	
 	private String teamname;
 	
 	private String courseid;
+	
+	private Float teamscore;
 	
 	private String studentid;
 	
@@ -23,6 +28,14 @@ public class Teamteamstudent {
 
 	public void setTeamid(String teamid) {
 		this.teamid = teamid;
+	}
+
+	public String getTeamscode() {
+		return teamscode;
+	}
+
+	public void setTeamscode(String teamscode) {
+		this.teamscode = teamscode;
 	}
 
 	public String getTeamname() {
@@ -39,6 +52,14 @@ public class Teamteamstudent {
 
 	public void setCourseid(String courseid) {
 		this.courseid = courseid;
+	}
+
+	public Float getTeamscore() {
+		return teamscore;
+	}
+
+	public void setTeamscore(Float teamscore) {
+		this.teamscore = teamscore;
 	}
 
 	public String getStudentid() {
@@ -59,8 +80,9 @@ public class Teamteamstudent {
 
 	@Override
 	public String toString() {
-		return "Teamteamstudent [teamid=" + teamid + ", teamname=" + teamname + ", courseid=" + courseid
-				+ ", studentid=" + studentid + ", character=" + character + "]";
+		return "Teamteamstudent [teamid=" + teamid + ", teamscode=" + teamscode + ", teamname=" + teamname
+				+ ", courseid=" + courseid + ", teamscore=" + teamscore + ", studentid=" + studentid + ", character="
+				+ character + "]";
 	}
 
 }

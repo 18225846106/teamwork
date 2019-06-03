@@ -9,8 +9,8 @@
 /* 学生信息展示面板外包 */
 .Student {
 	overflow: auto;
-	width: 80%;
-	height: 40%;
+	width: 95%;
+	/* height: 40%; */
 	max-height: 300px;
 	border: 1px solid #dfdfdf;
 	margin: 5px;
@@ -29,9 +29,9 @@
 /* 班级学生分组信息展示面板外包 */
 .StudentProject {
 	overflow: auto;
-	width: 80%;
-	height: 40%;
-	max-height: 300px;
+	width: 95%;
+	/* height: 40%; */
+	max-height: 400px;
 	border: 1px solid #CCC;
 	margin: 5px;
 }

@@ -13,6 +13,21 @@ public interface AssignmentMapper {
 	//根据任务id查找任务信息
 	Assignment findAssignmentByid(@Param("assignmentid") String assignmentid);
 	
+	//全属性插入新建一个任务
+	int insertAssignment(Assignment assignment);
+	
+	//根据id修改任务的信息
+	int updateAssignment(Assignment assignment);
+	
+	//删除任务根据id
+	int deleteAssignment(@Param("id") String assignmentid);
+	
+	//根据项目编号，删除任务
+	int deleteAssignmentByProjectid(@Param("projectid") String projectid);
+	
+	//根据学生编号，删除任务
+	int deleteAssignmentByStudentid(@Param("studentid") String studentid);
+	
 	//
     long countByExample(AssignmentExample example);
 

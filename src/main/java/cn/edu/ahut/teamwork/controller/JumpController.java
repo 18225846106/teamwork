@@ -191,4 +191,93 @@ public class JumpController {
 		}
 		return "AssignmentDetail";
 	}
+	
+	/**
+	 * 跳转到学生登录后的页面,课程页面
+	 * @param username
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value="/studentcourse")
+	public String StudentCourse(
+			@Param(value="username") String username,
+			HttpServletRequest request,HttpServletResponse response) {
+		try {
+			request.setAttribute("username", username);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return "StudentCourse";
+	}
+	
+	/**
+	 * 学生进入班级内的页面
+	 * @param studentid
+	 * @param courseid
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value="/studentcoursedetail")
+	public String StudentCourseDetail(
+			@Param(value="studentid") String studentid,
+			@Param(value="courseid") String courseid,
+			HttpServletRequest request,HttpServletResponse response) {
+		try {
+			request.setAttribute("studentid", studentid);
+			request.setAttribute("courseid", courseid);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return "StudentCourseDetail";
+	}
+	
+	/**
+	 * 转到学生和小组的任务界面
+	 * @param studentid
+	 * @param projectid
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value="/studentandteamassignment")
+	public String StudentAndTeamAssignment(
+			@Param(value="studentid") String studentid,
+			@Param(value="projectid") String projectid,
+			HttpServletRequest request,HttpServletResponse response) {
+		try {
+			request.setAttribute("studentid", studentid);
+			request.setAttribute("projectid", projectid);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return "StudentAndTeamAssignment";
+	}
+	
+	/**
+	 * 一个参数是创建任务，两个参数是编辑任务
+	 * @param assignmentid
+	 * @param projectid
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value="/createassignment")
+	public String CreateAssignment(
+			@Param(value="assignmentid") String assignmentid,
+			@Param(value="projectid") String projectid,
+			HttpServletRequest request,HttpServletResponse response) {
+		try {
+			request.setAttribute("assignmentid", assignmentid);
+			request.setAttribute("projectid", projectid);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return "CreateAssignment";
+	}
 }

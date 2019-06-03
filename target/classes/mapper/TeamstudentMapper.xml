@@ -192,6 +192,25 @@
 		order by teamid asc, studentid asc, `character` desc
 	</select>
 	
+	<!-- 根据teamstudent查找teamstudent -->
+	<select id="findTeamstudentByTeamstudent" parameterType="Teamstudent" resultType="Teamstudent">
+		SELECT * FROM team_student 
+		<where>
+			<if test="teamid != null">
+				and teamid = #{teamid}
+			</if>
+			<if test="studentid != null">
+				and studentid = #{studentid}
+			</if>
+			<if test="courseid != null">
+				and courseid = #{courseid}
+			</if>
+			<if test="character != null">
+				and `character` = #{character}
+			</if>
+		</where>
+	</select>
+	
 	<!-- 插入新的小组学生表 -->
 	<insert id="insertTeamstudent" parameterType="Teamstudent">
 		INSERT INTO team_student 
@@ -201,10 +220,59 @@
 		)
 	</insert>
 	
+	<!-- 修改teamstudent -->
+	<update id="updateTeamstudent" parameterType="Teamstudent">
+		update team_student 
+		<set>
+			<if test="teamid != null">
+				teamid = #{teamid},
+			</if>
+			<if test="studentid != null">
+				studentid = #{studentid},
+			</if>
+			<if test="courseid != null">
+				courseid = #{courseid},
+			</if>
+			<if test="character != null">
+				`character` = #{character},
+			</if>
+		</set>
+		<where>
+			<if test="teamid != null">
+				and teamid = #{teamid}
+			</if>
+			<if test="studentid != null">
+				and studentid = #{studentid}
+			</if>
+			<if test="courseid != null">
+				and courseid = #{courseid}
+			</if>
+		</where>
+	</update>
+	
 	<!-- 根据课程id删除小组学生 -->
 	<delete id="deleteTeamstudentByCourseid" parameterType="String">
 		delete from team_student 
 		where courseid = #{courseid}
+	</delete>
+	
+	<!-- 删除teamstudent -->
+	<delete id="deleteTeamstudent" parameterType="Teamstudent">
+		delete from team_student 
+		<where>
+			<if test="teamid != null">
+				and teamid = #{teamid}
+			</if>
+			<if test="studentid != null">
+				and studentid = #{studentid}
+			</if>
+			<if test="courseid != null">
+				and courseid = #{courseid}
+			</if>
+			<if test="character != null">
+				and `character` = #{character}
+			</if>
+		</where>
 	</delete>
 	
 </mapper>

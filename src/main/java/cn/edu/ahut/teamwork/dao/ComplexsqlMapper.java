@@ -8,6 +8,9 @@ import cn.edu.ahut.teamwork.entity.Assignment;
 import cn.edu.ahut.teamwork.entity.Student;
 import cn.edu.ahut.teamwork.entity.StudentAssignment;
 import cn.edu.ahut.teamwork.entity.Studentteamstudent;
+import cn.edu.ahut.teamwork.entity.TeacherCourse;
+import cn.edu.ahut.teamwork.entity.Team;
+import cn.edu.ahut.teamwork.entity.Teamstudent;
 import cn.edu.ahut.teamwork.entity.Teamteamstudent;
 import cn.edu.ahut.teamwork.entity.Teamteamstudentstudent;
 
@@ -34,4 +37,15 @@ public interface ComplexsqlMapper {
 	//查找学生信息,按专业升序或降序排列，根据课程编号courseid从课程学生表coursestudent找到所有学生编号
 	List<Student> findStudentByCourseidOrderByclassid(@Param("courseid") String courseid);
 
+	//查找，项目 所在小组的成员id，team_student
+	List<Teamstudent> findTeamstudentByProjectid(@Param("projectid") String projectid);
+	
+	//插入小组分数，通过teamid，到team-student找到studentid，courseid，到course-student表修改teamscore
+	int updateCoursestudentTeamscoreByTeam(Team team);
+	
+	//插入小组分数同时个人分等同于小祖分，通过teamid，到team-student找到studentid，courseid，到course-student表修改teamscore
+	int updateCoursestudentTpscoreByTeam(Team team);
+	
+	//查询学生的所有课程和老师信息
+	List<TeacherCourse> findTeachercourseByStudentid(@Param("studentid") String studentid);
 }

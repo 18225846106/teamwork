@@ -94,4 +94,46 @@ public class TeamWorkUtils {
 		return result;
 	}
 	
+	//学生评分，字符串和map的相互转换
+	public Map<String, Object> stringtomap(String studentscore){
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		//拆成学号和分数的对
+		String[] scorelist = studentscore.split(",");
+		//每对分成学号和分数
+		String[] scoremap;
+		for (int i = 0; i < scorelist.length; i++) {
+			scoremap = scorelist[i].split("=");
+			map.put(scoremap[0], scoremap[1]);
+		}
+		return map;
+	}
+	
+	//学生评分，map和字符串相互转化
+	public String maptostring(Map<String, Object> map) {
+		String studentscore;
+		studentscore = map.toString().replace("{", "").replace("}", "").trim();
+		return studentscore;
+	}
+	
+	//学生评分，找到对应学号和分数，修改值，找不到则添加一对值
+	public String alterstudentscore(String old,String change) {
+		Map<String, Object> oldmap = stringtomap(old);
+//		Map<String, Object> changemap = stringtomap(change);
+		
+//		for (int i = 0; i < oldmap.size(); i++) {
+//			if (oldmap.get(i) == changemap.get(0)) {
+//				oldmap.put(oldmap.get(i).toString(), changemap.get(0));
+//			}
+//		}
+//		
+		for (String studentid : oldmap.keySet()) {
+			if (studentid.equals(change.split("=")[0])) {
+				oldmap.put(studentid, change.split("=")[1]);
+			}
+		}
+		
+		String studentscore = maptostring(oldmap);
+		return studentscore;
+	}
 }

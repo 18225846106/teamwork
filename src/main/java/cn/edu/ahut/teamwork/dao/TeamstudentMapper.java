@@ -10,6 +10,9 @@ public interface TeamstudentMapper {
 	//根据课程编号查找该课程内的小组学生关系表
 	List<Teamstudent> findByCourseid(@Param("courseid") String courseid);
 	
+	//根据teamstudent查找teamstudent
+	List<Teamstudent> findTeamstudentByTeamstudent(Teamstudent teamstudent);
+	
 	//插入新的小组学生表
 	int insertTeamstudent(Teamstudent teamstudent);
 	

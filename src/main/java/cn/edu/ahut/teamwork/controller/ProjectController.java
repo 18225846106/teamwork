@@ -13,13 +13,14 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.edu.ahut.teamwork.entity.Project;
+import cn.edu.ahut.teamwork.entity.Team;
 import cn.edu.ahut.teamwork.service.ProjectService;
+import cn.edu.ahut.teamwork.service.TeamService;
 
 @Controller
 @RequestMapping(value="/project")
@@ -27,6 +28,9 @@ public class ProjectController {
 
 	@Autowired
 	ProjectService projectService;
+	
+	@Autowired
+	TeamService teamService;
 	
 	/**
 	 * 通过项目属性查询项目信息
@@ -154,7 +158,7 @@ public class ProjectController {
 			HttpServletRequest request, HttpServletResponse response,Model model) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		try {
-			if (id == null || id == "") {
+			if (id == null || id.equals("")) {
 				map.put("code", "100");
 				map.put("info", "项目编号丢失!");
 			}
@@ -237,6 +241,7 @@ public class ProjectController {
 			@RequestParam(value="finishtime",defaultValue="") String finishtime,
 			@RequestParam(value="state",defaultValue="1") Integer state,
 			@RequestParam(value="description",defaultValue="") String description,
+			@RequestParam(value="score",defaultValue="0") Float score,
 			HttpServletRequest request, HttpServletResponse response,Model model){
 		Map<String, Object> map = new HashMap<String, Object>();
 		try {
@@ -247,27 +252,29 @@ public class ProjectController {
 			id = UUID.randomUUID().toString().replace("-", "");
 			project.setId(id);
 			//没有指定项目编号则UUID作为项目编号
-			if (pcode == "" || pcode ==null) {
+			if (pcode.equals("") || pcode == null) {
 				pcode = id;
 			}
 			project.setCode(pcode);
 			//为项目指定名称
-			if (name != "" && name != null) {
+			if (!name.equals("") && name != null) {
 				project.setName(name);
 			}else {
 				code = "100";
 				info = info + " 项目名称空!";
 			}
 			//项目所属课程id
-			if (courseid != "" && courseid != null) {
+			if (!courseid.equals("") && courseid != null) {
 				project.setCourseid(courseid);
 			}else {
 				code = "100";
 				info = info + " 项目所属课程id空!";
 			}
 			//项目指派的小组id
-			if (tid != "" && tid != null) {
+			if (!tid.equals("") && tid != null) {
 				project.setTid(tid);
+			}else {
+				info = info + " 项目所属小组id空!";
 			}
 			//项目的进度，新建默认0
 			if (progress == null) {
@@ -277,11 +284,11 @@ public class ProjectController {
 				project.setProgress(progress);
 			}
 			//项目的开始时间
-			if (starttime != "" && starttime != null) {
+			if (!starttime.equals("") && starttime != null) {
 				project.setStarttime(new Date(Long.valueOf(starttime)));
 			}
 			//项目的截止时间
-			if (endtime != "" && endtime != null) {
+			if (!endtime.equals("") && endtime != null) {
 				project.setEndtime(new Date(Long.valueOf(endtime)));
 			}
 			//项目状态，创建新项目自动1未开始
@@ -291,7 +298,7 @@ public class ProjectController {
 				project.setState(state);
 			}
 			//项目描述信息
-			if (description != "" && description != null) {
+			if (!description.equals("") && description != null) {
 				project.setDescription(description);
 			}else {
 				info = info + " 项目描述是空的!";
@@ -315,6 +322,133 @@ public class ProjectController {
 				}
 			}
 			
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return map;
+	}
+	
+	/**
+	 * 创建一个每个小组都要完成新的项目
+	 * @param id 项目id
+	 * @param code 项目编号
+	 * @param name 项目名称
+	 * @param courseid 编辑编号
+	 * @param tid 指派到的小组id
+	 * @param progress 项目进程
+	 * @param starttime 项目开始时间
+	 * @param endtime 项目截止时间
+	 * @param finishtime 项目完成时间
+	 * @param state 项目状态
+	 * @param description 项目描述信息
+	 * @param request 页面请求
+	 * @param response 页面回馈
+	 * @param model 页面模型
+	 * @return json/map
+	 */
+	@RequestMapping(value="/insertprojectforallteam")
+	@ResponseBody
+	public Map<String, Object>insertProjectForAllTeam(
+			@RequestParam(value="id",defaultValue="") String id,
+			@RequestParam(value="code",defaultValue="") String pcode,
+			@RequestParam(value="name",defaultValue="") String name,
+			@RequestParam(value="courseid",defaultValue="") String courseid,
+			//@RequestParam(value="tid",defaultValue="") String tid,
+			@RequestParam(value="progress",defaultValue="0") Float progress,
+			@RequestParam(value="starttime",defaultValue="") String starttime,
+			@RequestParam(value="endtime",defaultValue="") String endtime,
+			@RequestParam(value="finishtime",defaultValue="") String finishtime,
+			@RequestParam(value="state",defaultValue="1") Integer state,
+			@RequestParam(value="description",defaultValue="") String description,
+			@RequestParam(value="score",defaultValue="0") Float score,
+			HttpServletRequest request, HttpServletResponse response,Model model){
+		Map<String, Object> map = new HashMap<String, Object>();
+		try {
+			String code = "200";
+			String info = "";
+			int num = 0;
+			Project project = new Project();
+			//找到所有小组
+			List<Team> teams = teamService.findTeamByCourseid(courseid);
+			if (teams == null) {
+				info = info + " 未查到班级内分组!";
+				code = "100";
+			}else {
+				//没有指定项目编号则UUID作为项目编号
+				if (pcode.equals("") || pcode == null) {
+					pcode = UUID.randomUUID().toString().replace("-", "");;
+				}
+				project.setCode(pcode);
+				//为项目指定名称
+				if (!name.equals("") && name != null) {
+					project.setName(name);
+				}else {
+					code = "100";
+					info = info + " 项目名称空!";
+				}
+				//项目所属课程id
+				if (!courseid.equals("") && courseid != null) {
+					project.setCourseid(courseid);
+				}else {
+					code = "100";
+					info = info + " 项目所属课程id空!";
+				}
+				//项目的进度，新建默认0
+				if (progress == null) {
+					project.setProgress((float)0);
+				}
+				else {
+					project.setProgress(progress);
+				}
+				//项目的开始时间
+				if (!starttime.equals("") && starttime != null) {
+					project.setStarttime(new Date(Long.valueOf(starttime)));
+				}
+				//项目的截止时间
+				if (!endtime.equals("") && endtime != null) {
+					project.setEndtime(new Date(Long.valueOf(endtime)));
+				}
+				//项目状态，创建新项目自动1未开始
+				if (state == null) {
+					project.setState(1);
+				}else {
+					project.setState(state);
+				}
+				//项目描述信息
+				if (!description.equals("") && description != null) {
+					project.setDescription(description);
+				}else {
+					info = info + " 项目描述是空的!";
+				}
+				//满足插入条件
+				if (code.equals("200")) {
+					//循环为所有组创建该项目
+					for (int i = 0; i < teams.size(); i++) {
+						//为项目创建一个UUID
+						id = UUID.randomUUID().toString().replace("-", "");
+						project.setId(id);
+						//项目指派的小组id
+						project.setTid(teams.get(i).getId());
+						
+						//是可以插入一条数据
+						int result = projectService.insertProject(project);
+						if (result > 0) {
+							num++;
+						}else {
+							code = "100";
+							info = info + " 插入失败!";
+							//map.put("result", result);
+						}
+						if (code.equals("100")) {
+							break;
+						}
+					}
+				}
+			}
+			map.put("code", code);
+			map.put("info", info);
+			map.put("num", num);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -356,52 +490,86 @@ public class ProjectController {
 			@RequestParam(value="state",defaultValue="") String state,
 //			@Param(value="state") Integer state,
 			@RequestParam(value="description",defaultValue="") String description,
+			@RequestParam(value="score",defaultValue="") String  score,
 			HttpServletRequest request, HttpServletResponse response,Model model){
 		Map<String, Object> map = new HashMap<String, Object>();
 		try {
+			String code = "200";
+			String info = "";
 			System.out.println(" id "+id+" pcode "+pcode+" name  "+name+" courseid  "+courseid+" tid  "+tid+" progress  "+progress+" starttime "+starttime+" endtime "+endtime+" finishtime "+finishtime+"  state "+state+" description "+description);
 			Project project = new Project();
 			if (id != null && !id.equals("")) {
+				//更新时项目id不为空才可以进行下一步操作
 				project.setId(id);
-			}
-			if (pcode != null && !pcode.equals("")) {
-				project.setCode(pcode);
-			}
-			if (name != null && !name.equals("")) {
-				project.setName(name);
-			}
-			if (courseid != null && !courseid.equals("")) {
-				project.setCourseid(courseid);
-			}
-			if (tid != null && !tid.equals("")) {
-				project.setTid(tid);
-			}
-			if (progress != null && !progress.equals("")) {
-				project.setProgress(Float.valueOf(progress));
-			}
-			if (starttime != null && !starttime.equals("")) {
-				project.setStarttime(new Date(Long.valueOf(starttime)));
-			}
-			if (endtime != null && !endtime.equals("")) {
-				project.setEndtime(new Date(Long.valueOf(endtime)));
-			}
-			if (finishtime != null  && !finishtime.equals("")) {
-				project.setFinishtime(new Date(Long.valueOf(finishtime)));
-			}
-			if (state != null && !state.equals("")) {
-				project.setState(Integer.parseInt(state));
-			}
-			if (description != null  && description != "") {
-				project.setDescription(description);
-			}
-			int result = projectService.updateProject(project);
-			if (result > 0) {
-				map.put("code", "200");
-				map.put("info", "更新成功!");
+				if (pcode != null && !pcode.equals("")) {
+					project.setCode(pcode);
+				}
+				if (name != null && !name.equals("")) {
+					project.setName(name);
+				}else {
+					info = info + " 项目名空!";
+				}
+				if (courseid != null && !courseid.equals("")) {
+					project.setCourseid(courseid);
+				}
+				else {
+					info = info + " 班级编号空!";
+				}
+				if (tid != null && !tid.equals("")) {
+					project.setTid(tid);
+				}else {
+					info = info + " 小组编号空!";
+				}
+				if (progress != null && !progress.equals("") && Float.valueOf(progress) >= 0) {
+					project.setProgress(Float.valueOf(progress));
+				}else {
+					info = info + " 项目进度有误!";
+				}
+				if (starttime != null && !starttime.equals("")) {
+					project.setStarttime(new Date(Long.valueOf(starttime)));
+				}else {
+					info = info + " 开始时间空!";
+				}
+				if (endtime != null && !endtime.equals("")) {
+					project.setEndtime(new Date(Long.valueOf(endtime)));
+				}else {
+					info = info + " 截止时间空!";
+				}
+				if (finishtime != null  && !finishtime.equals("")) {
+					project.setFinishtime(new Date(Long.valueOf(finishtime)));
+				}else {
+					info = info + " 完成时间空!";
+				}
+				if (state != null && !state.equals("")) {
+					project.setState(Integer.parseInt(state));
+				}else {
+					info = info + " 完成状态空!";
+				}
+				if (description != null  && description != "") {
+					project.setDescription(description);
+				}else {
+					info = info + " 项目描述空!";
+				}
+				if (score != null && !score.equals("") && Float.valueOf(score) >= 0) {
+					project.setScore(Float.valueOf(score));
+				} else {
+					info = info + " 项目分数空!";
+				}
+				int result = projectService.updateProject(project);
+				if (result > 0) {
+					map.put("code", "200");
+					map.put("info", "更新成功!");
+				}
+				else {
+					map.put("code", "100");
+					map.put("info", "更新失败!");
+				}
 			}
 			else {
-				map.put("code", "100");
-				map.put("info", "更新失败!");
+				code = "100";
+				info = info + " 项目编号空!";
+				map.put("code", code);
+				map.put("info", info);
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -409,7 +577,14 @@ public class ProjectController {
 		}
 		return map;
 	}
-	
+	/**
+	 * 根据项目id删除项目
+	 * @param projectid
+	 * @param request
+	 * @param response
+	 * @param model
+	 * @return
+	 */
 	@RequestMapping(value="/deleteproject")
 	@ResponseBody
 	public Map<String, Object> deleteProject(

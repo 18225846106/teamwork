@@ -52,6 +52,9 @@ public class StudentController {
 	@RequestMapping(value="/loginout")
 	public String LoginOut(HttpSession session) {
 		session.removeAttribute("LOGIN");
+		session.removeAttribute("username");
+		session.removeAttribute("loginname");
+		session.removeAttribute("role");
 		return "Login";
 	}
 	
@@ -95,6 +98,8 @@ public class StudentController {
 					map.put("type", 0);
 					session.setAttribute("LOGIN", username);
 					session.setAttribute("username", username);
+					session.setAttribute("loginname", student.getName());
+					session.setAttribute("role", "student");
 				}
 			}
 		} catch (Exception e) {

@@ -74,6 +74,10 @@
 					endtime = data.project.endtime;
 					//打印project
 					displayproject(data.project);
+					//将项目分数写在输入框
+					if (data.project.score != null && data.project.score != "") {
+						$("#projectscore").val(data.project.score);
+					}
 				}
 				//未知信息
 				else{
@@ -127,7 +131,8 @@
 		//项目名称
 		var trname = $("<tr></tr>").append($("<td></td>").text("项目名称:")).append($("<td></td>").text(project.name));
 		//任务状态，状态不同，修改样式
-		if (project.state == 1) {
+		var trstate = $("<tr></tr>").append($("<td></td>").text("项目状态:")).append($("<td></td>").append(getstate(project.endtime,project.finishtime,project.progress)));
+		/* if (project.state == 1) {
 			var trstate = $("<tr></tr>").append($("<td></td>").text("项目状态:")).append($("<td></td>").text("未开始"));
 		}
 		else if (project.state == 2) {
@@ -138,13 +143,18 @@
 		}
 		else if (project.state == 4) {
 			var trstate = $("<tr></tr>").append($("<td></td>").text("项目状态:")).append($("<td></td>").text("逾期").attr("style","color: #ff1717;"));
-		}
+		} */
 		//任务开始时间
 		var trstarttime = $("<tr></tr>").append($("<td></td>").text("开始时间:")).append($("<td></td>").text(getdate(project.starttime)));
 		//任务截止时间
 		var trsendtime = $("<tr></tr>").append($("<td></td>").text("截止时间:")).append($("<td></td>").text(getdate(project.endtime)));
 		//任务结束时间
-		if (project.state == 3 || project.state == 4) {
+		if (project.finishtime == null || project.finishtime == "") {
+			var trsfinishime = $("<tr></tr>").append($("<td></td>").text("结束时间:")).append($("<td></td>").text("----"));
+		} else {
+			var trsfinishime = $("<tr></tr>").append($("<td></td>").text("结束时间:")).append($("<td></td>").text(getdate(project.finishtime)));
+		}
+		/* if (project.state == 3 || project.state == 4) {
 			var trsfinishime = $("<tr></tr>").append($("<td></td>").text("结束时间:")).append($("<td></td>").text(getdate(project.finishtime)));
 		}
 		else if (project.state == 1) {
@@ -152,7 +162,7 @@
 		}
 		else if (project.state == 2) {
 			var trsfinishime = $("<tr></tr>").append($("<td></td>").text("结束时间:")).append($("<td></td>").text("----"));
-		}
+		} */
 		//one
 		var tdone = $("<td></td>").append(trid).append(trname).append(trstate);
 		//two
@@ -164,6 +174,9 @@
 		//all-to-tbody-to-table//画出表格//两行
 		table.append($("<tbody></tbody>").append(onetwo).append(trthree));
 		$("#project_table").append(table);
+		//项目描述信息
+		var description = $("<div></div>").attr({"style":"overflow: auto;width: 100%;min-height: 5em;max-height: 8em;border: 1px solid #dfdfdf;"}).text(project.description);
+		$("#project_table").append(description);
 	}
 	
 /* 	//打印任务信息
@@ -251,7 +264,8 @@
 			//学生姓名
 			var trsname = $("<tr></tr>").append($("<td></td>").text("学生姓名:")).append($("<td></td>").text(studentassignment.studentname));
 			//任务状态，状态不同，修改样式
-			if (studentassignment.state == 1) {
+			var trstate = $("<tr></tr>").append($("<td></td>").text("任务状态:")).append($("<td></td>").append(getstate(studentassignment.endtime,studentassignment.finishtime,studentassignment.progress)));
+			/* if (studentassignment.state == 1) {
 				var trstate = $("<tr></tr>").append($("<td></td>").text("任务状态:")).append($("<td></td>").text("未开始"));
 			}
 			else if (studentassignment.state == 2) {
@@ -262,13 +276,18 @@
 			}
 			else if (studentassignment.state == 4) {
 				var trstate = $("<tr></tr>").append($("<td></td>").text("任务状态:")).append($("<td></td>").text("逾期").attr("style","color: #ff1717;"));
-			}
+			} */
 			//任务开始时间
 			var trstarttime = $("<tr></tr>").append($("<td></td>").text("开始时间:")).append($("<td></td>").text(getdate(studentassignment.starttime)));
 			//任务截止时间
 			var trsendtime = $("<tr></tr>").append($("<td></td>").text("截止时间:")).append($("<td></td>").text(getdate(studentassignment.endtime)));
 			//任务结束时间
-			if (studentassignment.state == 3) {
+			if (studentassignment.finishtime == null || studentassignment.finishtime == "") {
+				var trsfinishime = $("<tr></tr>").append($("<td></td>").text("结束时间:")).append($("<td></td>").text("----"));
+			}else{
+				var trsfinishime = $("<tr></tr>").append($("<td></td>").text("结束时间:")).append($("<td></td>").text(getdate(studentassignment.finishtime)));
+			}
+			/* if (studentassignment.state == 3) {
 				var trsfinishime = $("<tr></tr>").append($("<td></td>").text("结束时间:")).append($("<td></td>").text(getdate(studentassignment.finishtime)));
 			}
 			else if (studentassignment.state == 1) {
@@ -279,7 +298,7 @@
 			}
 			else if (studentassignment.state == 4) {
 				var trsfinishime = $("<tr></tr>").append($("<td></td>").text("结束时间:")).append($("<td></td>").text(getdate(studentassignment.endtime)));
-			}
+			} */
 			//one第一部分四项信息
 			var tdone = $("<td></td>").append(traid).append(traname).append(trsid).append(trsname);
 			//two第二部分四项信息
@@ -293,19 +312,29 @@
 			//画按钮
 			if (studentassignment.studentid != null && studentassignment.studentid != "") {//当项目已经被分组
 				var trbut = $("<tr></tr>")
-						.append($("<td></td>").text("分配到学生编号:"+codetoolang(studentassignment.studentid)))
+						.append($("<td></td>").text("分配到学生编号:"+codetoolang(studentassignment.studentid)).attr({"title":studentassignment.studentid}))
 				if (studentassignment.state == 1) {
 					trbut.append($("<td></td>")
-						.append($("<button></button>").attr({"type":"button","data-toggle":"modal","data-target":"#AllotAssignmentModal","style":"padding: 2px;font-size: 1em;","title":"任务未开始可重新指配","onclick":"getstudent('"+studentassignment.projectid+"','"+studentassignment.assignmentid+"');"}).addClass("btn btn-default btn-lg").text("分配任务"))
+						.append($("<button></button>").attr({"type":"button","data-toggle":"modal","data-target":"#AllotAssignmentModal","style":"padding: 2px;font-size: 1em;","title":"任务未开始可重新指配","onclick":"getstudent('"+studentassignment.projectid+"','"+studentassignment.assignmentid+"');"}).addClass("btn btn-default btn-lg").text("重新指派"))
 						.append($("<button></button>").attr({"type":"button","data-toggle":"modal","data-target":"#EditAssignmentModal","style":"padding: 2px;font-size: 1em;","onclick":"editAssignment('"+studentassignment.assignmentid+"');"}).addClass("btn btn-default btn-lg").text("编辑任务"))
 						.append($("<button></button>").attr({"type":"button","style":"padding: 2px;font-size: 1em;","onclick":"deleteAssignment('"+studentassignment.assignmentid+"','"+studentassignment.assignmentname+"');"}).addClass("btn btn-default").text("删除任务")))
-					.append($("<td></td>"))
+					//.append($("<td></td>").text("分数:"+studentassignment.scor))
+					if (studentassignment.score != null && studentassignment.score != "") {
+						trbut.append($("<td></td>").text("分数:"+studentassignment.score))
+					}else {
+						trbut.append($("<td></td>").text("分数:----"))
+					}
 				}
 				else{
 					trbut.append($("<td></td>")
 					.append($("<button></button>").attr({"type":"button","data-toggle":"modal","data-target":"#EditAssignmentModal","style":"padding: 2px;font-size: 1em;","onclick":"editAssignment('"+studentassignment.assignmentid+"');"}).addClass("btn btn-default btn-lg").text("编辑任务"))
 					.append($("<button></button>").attr({"type":"button","style":"padding: 2px;font-size: 1em;","onclick":"deleteAssignment('"+studentassignment.assignmentid+"','"+studentassignment.assignmentname+"');"}).addClass("btn btn-default").text("删除任务")))
-					.append($("<td></td>"))
+					//.append($("<td></td>").text("分数:"+studentassignment.scor))
+					if (studentassignment.score != null && studentassignment.score != "") {
+						trbut.append($("<td></td>").text("分数:"+studentassignment.score))
+					}else {
+						trbut.append($("<td></td>").text("分数:----"))
+					}
 				}
 						//.append($("<td></td>")
 						//		.append($("<button></button>").attr({"type":"button","data-toggle":"modal","data-target":"#EditAssignmentModal","style":"padding: 2px;font-size: 1em;","onclick":"editAssignment('"+studentassignment.assignmentid+"');"}).addClass("btn btn-default btn-lg").text("编辑任务"))
@@ -318,7 +347,11 @@
 						.append($("<td></td>")
 								.append($("<button></button>").attr({"type":"button","data-toggle":"modal","data-target":"#EditAssignmentModal","style":"padding: 2px;font-size: 1em;","onclick":"editAssignment('"+studentassignment.assignmentid+"');"}).addClass("btn btn-default btn-lg").text("编辑任务"))
 								.append($("<button></button>").attr({"type":"button","style":"padding: 2px;font-size: 1em;","onclick":"deleteAssignment('"+studentassignment.assignmentid+"','"+studentassignment.assignmentname+"');"}).addClass("btn btn-default").text("删除任务")))
-						.append($("<td></td>"))
+				if (studentassignment.score != null && studentassignment.score != "") {
+					trbut.append($("<td></td>").text("分数:"+studentassignment.score))
+				}else {
+					trbut.append($("<td></td>").text("分数:----"))
+				}
 				//tbody.append(trbut);
 			}
 			
@@ -600,26 +633,32 @@
 <body>
 
 	<!-- 页面布局的头部 -->
-	<div id="head" style="height: 200px;background-image: url(/teamwork/static/img/headcartoon.gif);background-repeat: no-repeat;background-position:center;">
-		<div style="display: flex;height:  2em;justify-content: flex-end;justify-items: center;width: 100%;">
-			<div style="min-width: 50px;"><p>欢迎：</p></div>
-			<div id="customer" style="min-width: 50px"><p><%=session.getAttribute("loginname") %></p></div>
-			<div style="min-width: 50px;color: blue;font: inherit;" onclick="loginout();"><p>退出!</p></div>
+	<div id="head" style="padding: 1px;">
+		<!-- 两端排列 -->
+		<div style="display: flex;justify-content: space-between;">
+			<div style="display: flex;justify-content: flex-start;justify-items: center;width: 50%;">
+				<!-- 标题图片 -->
+				<img alt="" src="/teamwork/static/img/headcharacter.png">
+			</div>
+			<div style="display: flex;height:  2em;justify-content: flex-end;justify-items: center;width: 50%;">
+				<div style="min-width: 3em;"><p>欢迎:</p></div>
+				<div id="customer" style="min-width: 50px"><p><%=session.getAttribute("loginname") %> !</p></div>
+				<div style="min-width: 50px;color: blue;font: inherit;" onclick="loginout();"><p>退出!</p></div>
+			</div>
 		</div>
-		<!-- <img alt="xiatongtoubutupian" src="/teamwork/static/img/headcartoon.gif"> -->
 	</div>
 	
 	<!-- 中间体 -->
 	<div style="display: flex;width: 100%;">
 		
-		<div style="width: 20%;"></div>
+		<div style="width: 20%;border: 1px solid #e4e2e2;"></div>
 		<!-- 切片页面 -->
-		<div style="width: 80%;">
+		<div style="width: 80%;border-top: 1px solid #e4e2e2;">
 
 			<!-- 项目基本信息 -->
 			<div class="Project">
 				<!-- 表头project -->
-				<div class="container">
+				<div class="container" style="width: 100%;">
 					<!-- 表头 -->
 					<div class="row">
 						<p>项目基本信息</p>
@@ -666,7 +705,7 @@
 	
 			<!-- 展示学生在班级内的任务 -->
 			<div class="ProjectAssignment">
-				<div class="container">
+				<div class="container" style="width: 100%;">
 					<!-- 表头 -->
 					<div class="row">
 						<div style="display: flex;justify-content: space-between;margin: 0px 15px;padding: 2px;">
@@ -687,6 +726,21 @@
 							<!-- 打印每一条任务信息 -->
 						</div>
 					</div>
+				</div>
+			</div>
+			
+			<!-- 项目评分模块 -->
+			<div id="projectscorediv" style="width: 90%;margin-top: 10px;display: flex;justify-content: space-between;">
+				<div style="display: flex;">
+					<div style="padding: 1px 4px;">
+						项目评分:
+					</div>
+					<div>
+						<input id="projectscore" type="text" class="" style="width: auto;border-radius: 2px;" placeholder="输入0-100的正数" title="输入0-100的正数">
+					</div>
+				</div>
+				<div style="padding: 1px 4px;">
+					<input id="projectsubmitscore" type="button" class="btn btn-primary" style="padding: 2px 4px;" value="提交分数" onclick="projectsubmitscore();">
 				</div>
 			</div>
 	

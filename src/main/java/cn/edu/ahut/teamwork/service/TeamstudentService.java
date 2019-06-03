@@ -25,6 +25,16 @@ public class TeamstudentService {
 	}
 	
 	/**
+	 * 根据teamstudent查找teamstudent
+	 * @param teamstudent
+	 * @return
+	 */
+	public List<Teamstudent> findTeamstudentByTeamstudent(Teamstudent teamstudent) {
+		List<Teamstudent> teamstudents = teamstudentMapper.findTeamstudentByTeamstudent(teamstudent);
+		return teamstudents;
+	}
+	
+	/**
 	 * 插入新的小组学生表
 	 * @param teamstudent
 	 * @return

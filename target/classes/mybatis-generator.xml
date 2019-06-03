@@ -60,8 +60,9 @@
 		</javaClientGenerator>
 		
 		<!-- table -->
-		<table tableName="assignment" domainObjectName="Assignment"></table>
 		<!-- 
+		<table tableName="assignment_detail" domainObjectName="Assignmentdetail"></table>
+		<table tableName="assignment" domainObjectName="Assignment"></table>
 		<table tableName="teacher" domainObjectName="Teacher"></table>
 		<table tableName="student" domainObjectName="Student"></table>
 		<table tableName="team" domainObjectName="Team"></table>

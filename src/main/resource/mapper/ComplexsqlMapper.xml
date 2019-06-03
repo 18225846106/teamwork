@@ -5,18 +5,18 @@
 	
 	<sql id="assignment">
 		id as assignmentid,`name` as assignmentname,projectid as projectid,studentid as studentid,
-		progress as progress,starttime as starttime,endtime as endtime,finishtime as finishtime, state as state
+		progress as progress,starttime as starttime,endtime as endtime,finishtime as finishtime, state as state, score as score 
 	</sql>
 	
 	<!--  -->
 	<sql id="studentassignmentall">
-		assignmentid , assignmentname , projectid , studentid , progress , starttime , endtime , finishtime , state ,
+		assignmentid , assignmentname , projectid , studentid , progress , starttime , endtime , finishtime , state , score ,
 		 `name` as studentname , `password` as studentpassword , sfzh as studentsfzh , sex as studentsex , grade as studentgrade , classid as studentclassid , classname as studentclassname
 	</sql>
 	
 	<!--  -->
 	<sql id="studentassignment">
-		assignmentid , assignmentname , projectid , studentid , progress , starttime , endtime , finishtime , state ,
+		assignmentid , assignmentname , projectid , studentid , progress , starttime , endtime , finishtime , state ,score ,
 		 `name` as studentname , sex as studentsex , grade as studentgrade , classid as studentclassid , classname as studentclassname
 	</sql>
 	
@@ -39,7 +39,7 @@
 		<where>
 			t.courseid = #{courseid} and t.id = ts.teamid
 		</where>
-		ORDER BY teamid ASC
+		ORDER BY teamid ASC , `character` ASC
 	</select>
 	
 	<!-- 在findTtsByCourseid基础上加上学生信息 -->

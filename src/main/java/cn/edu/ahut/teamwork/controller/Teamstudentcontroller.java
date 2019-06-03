@@ -44,7 +44,7 @@ public class Teamstudentcontroller {
 			){
 		Map<String, Object> map = new HashMap<String, Object>();
 		try {
-			if (courseid == null || courseid == "") {
+			if (courseid == null || courseid.equals("")) {
 				map.put("code", "100");
 				map.put("info", "课程编号丢失!");
 			} else {
@@ -58,6 +58,69 @@ public class Teamstudentcontroller {
 					map.put("info", "查询结果为空!");
 				}
 			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return map;
+	}
+	
+	/**
+	 * 根据teamstudent查找teamstudent
+	 * @param teamid
+	 * @param studentid
+	 * @param courseid
+	 * @param character
+	 * @param request
+	 * @param response
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value="/findteamstudentbyteamstudent")
+	@ResponseBody
+	public Map<String, Object> findTeamstudentByTeamstudent(
+			@RequestParam(value="teamid",defaultValue="") String teamid,
+			@RequestParam(value="studentid",defaultValue="") String studentid,
+			@RequestParam(value="courseid",defaultValue="") String courseid,
+			@RequestParam(value="character",defaultValue="") String character,
+			HttpServletRequest request,HttpServletResponse response,Model model
+			){
+		Map<String, Object> map = new HashMap<String, Object>();
+		try {
+			String code = "200";
+			String info = "";
+			Teamstudent teamstudent = new Teamstudent();
+			if (teamid == null || teamid.equals("")) {
+				info = info + " 小组编号空!";
+			}else {
+				teamstudent.setTeamid(teamid);
+			}
+			if (courseid == null || courseid == "") {
+				info = info + " 课程编号空!";
+			}else {
+				teamstudent.setCourseid(courseid);
+			}
+			if (studentid == null || studentid.equals("")) {
+				info = info + " 学生编号空!";
+			}else {
+				teamstudent.setStudentid(studentid);
+			}
+			if (character == null || character.equals("")) {
+				info = info + " 担任角色空!";
+			}else {
+				teamstudent.setCharacter(character);
+			}
+			List<Teamstudent> teamstudents = teamstudentService.findTeamstudentByTeamstudent(teamstudent);
+			if (teamstudents != null) {
+				info = info + " 查询成功";
+				code = "200";
+				map.put("teamstudents", teamstudents);
+			} else {
+				code = "100";
+				info = info + " 查询结果为空!";
+			}
+			map.put("code", code);
+			map.put("info", info);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();

@@ -12,6 +12,8 @@ public class Team {
     private String name;
 
     private String courseid;
+    
+    private Float score;
 
     public String getId() {
         return id;
@@ -45,8 +47,17 @@ public class Team {
         this.courseid = courseid == null ? null : courseid.trim();
     }
 
+	public Float getScore() {
+		return score;
+	}
+
+	public void setScore(Float score) {
+		this.score = score;
+	}
+
 	@Override
 	public String toString() {
-		return "Team [id=" + id + ", code=" + code + ", name=" + name + ", courseid=" + courseid + "]";
+		return "Team [id=" + id + ", code=" + code + ", name=" + name + ", courseid=" + courseid + ", score=" + score
+				+ "]";
 	}
 }
