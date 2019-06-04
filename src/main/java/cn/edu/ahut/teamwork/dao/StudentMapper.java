@@ -7,6 +7,18 @@ import org.apache.ibatis.annotations.Param;
 
 public interface StudentMapper {
 	
+	//增加学生
+	int insertStudent(Student student);
+	
+	//根据id删除学生
+	int deleteStudentById(@Param("id")String id);
+	
+	//删除学生
+	int deleteStudent(Student student);
+	
+	//更新学生信息
+	int updateStudent(Student student);
+	
 	//查看所有学生
 	List<Student> findAll();
 	

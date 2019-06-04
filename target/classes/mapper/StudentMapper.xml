@@ -237,6 +237,157 @@
 			<include refid="Update_By_Example_Where_Clause" />
 		</if>
 	</update>
+	
+	<!-- 增加学生 -->
+	<insert id="insertStudent" parameterType="Student">
+		insert into student
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="name != null">
+				name,
+			</if>
+			<if test="password != null">
+				password,
+			</if>
+			<if test="sfzh != null">
+				sfzh,
+			</if>
+			<if test="sex != null">
+				sex,
+			</if>
+			<if test="grade != null">
+				grade,
+			</if>
+			<if test="classid != null">
+				classid,
+			</if>
+			<if test="classname != null">
+				classname,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="name != null">
+				#{name,jdbcType=VARCHAR},
+			</if>
+			<if test="password != null">
+				#{password,jdbcType=VARCHAR},
+			</if>
+			<if test="sfzh != null">
+				#{sfzh,jdbcType=VARCHAR},
+			</if>
+			<if test="sex != null">
+				#{sex,jdbcType=VARCHAR},
+			</if>
+			<if test="grade != null">
+				#{grade,jdbcType=VARCHAR},
+			</if>
+			<if test="classid != null">
+				#{classid,jdbcType=VARCHAR},
+			</if>
+			<if test="classname != null">
+				#{classname,jdbcType=VARCHAR},
+			</if>
+		</trim> 
+	</insert>
+	
+	<!-- 根据id删除学生 -->
+	<delete id="deleteStudentById" parameterType="String">
+		delete from student
+		where id = #{id}
+	</delete>
+	
+	<!-- 删除学生 -->
+	<delete id="deleteStudent" parameterType="Student">
+		delete from student
+		<where>
+			<if test="id != null">
+				and id = #{id}
+			</if>
+			<if test="name != null">
+				and name = #{name}
+			</if>
+			<if test="password != null">
+				and password = #{password}
+			</if>
+			<if test="sfzh != null">
+				and sfzh = #{sfzh}
+			</if>
+			<if test="sex != null">
+				and sex = #{sex}
+			</if>
+			<if test="grade != null">
+				and grade = #{grade}
+			</if>
+			<if test="classid != null">
+				and classid = #{classid}
+			</if>
+			<if test="classname != null">
+				and classname = #{classname}
+			</if>
+		</where>
+	</delete>
+	
+	<!-- 更新学生信息 -->
+	<update id="updateStudent" parameterType="Student">
+		update student
+		<set>
+			<if test="id != null">
+				id = #{id,jdbcType=VARCHAR},
+			</if>
+			<if test="name != null">
+				name = #{name,jdbcType=VARCHAR},
+			</if>
+			<if test="password != null">
+				password = #{password,jdbcType=VARCHAR},
+			</if>
+			<if test="sfzh != null">
+				sfzh = #{sfzh,jdbcType=VARCHAR},
+			</if>
+			<if test="sex != null">
+				sex = #{sex,jdbcType=VARCHAR},
+			</if>
+			<if test="grade != null">
+				grade = #{grade,jdbcType=VARCHAR},
+			</if>
+			<if test="record.classid != null">
+				classid = #{classid,jdbcType=VARCHAR},
+			</if>
+			<if test="record.classname != null">
+				classname = #{classname,jdbcType=VARCHAR},
+			</if>
+		</set>
+		<where>
+			<if test="id != null">
+				and id = #{id}
+			</if>
+			<if test="name != null">
+				and name = #{name}
+			</if>
+			<if test="password != null">
+				and password = #{password}
+			</if>
+			<if test="sfzh != null">
+				and sfzh = #{sfzh}
+			</if>
+			<if test="sex != null">
+				and sex = #{sex}
+			</if>
+			<if test="grade != null">
+				and grade = #{grade}
+			</if>
+			<if test="classid != null">
+				and classid = #{classid}
+			</if>
+			<if test="classname != null">
+				and classname = #{classname}
+			</if>
+		</where>
+	</update>
 
 	<!-- 查找所有学生 -->
 	<select id="findAll" resultType="Student">

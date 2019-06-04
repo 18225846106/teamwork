@@ -16,11 +16,11 @@ public class TestTime {
 		String sdate = (new Date()).toString();
 		System.out.println(sdate);
 		
-		String ldate = (new Date()).toLocaleString();
-		System.out.println(ldate);
+//		String ldate = (new Date()).toLocaleString();
+//		System.out.println(ldate);
 		
-		String sjcdate = (new Date()).toGMTString();
-		System.out.println(sjcdate);
+//		String sjcdate = (new Date()).toGMTString();
+//		System.out.println(sjcdate);
 		
 		Long sjcd = (new Date()).getTime();
 		System.out.println(sjcd);

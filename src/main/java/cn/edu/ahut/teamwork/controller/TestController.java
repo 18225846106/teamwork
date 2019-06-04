@@ -87,7 +87,7 @@ public class TestController {
 		try {
 			PageHelper.startPage(pag, 5);
 			List<Student> students = studentService.findAll();
-			PageInfo pageInfo = new PageInfo(students);
+			PageInfo<Student> pageInfo = new PageInfo<Student>(students);
 			request.setAttribute("pageInfo", pageInfo);
 			
 		} catch (Exception e) {

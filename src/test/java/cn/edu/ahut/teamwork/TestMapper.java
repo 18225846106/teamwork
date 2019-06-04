@@ -13,18 +13,27 @@ public class TestMapper {
 	
 	@Test
 	public void mapper() {
-		ApplicationContext applicationContext = new ClassPathXmlApplicationContext("applicationContext.xml");
-		TeacherMapper teacherMapper = applicationContext.getBean(TeacherMapper.class);
-//		List<Teacher> teachers = teacherMapper.findAll();
-		List<Teacher> teachers = teacherMapper.selectByExample(null);
-		Teacher teacher = teachers.get(0);
-		System.out.println(teacher.toString());
-		System.out.println(teachers);
+		try {
+			@SuppressWarnings("resource")
+			ApplicationContext applicationContext = new ClassPathXmlApplicationContext("applicationContext.xml");
+			TeacherMapper teacherMapper = applicationContext.getBean(TeacherMapper.class);
+//			List<Teacher> teachers = teacherMapper.findAll();
+			List<Teacher> teachers = teacherMapper.selectByExample(null);
+			Teacher teacher = teachers.get(0);
+			System.out.println(teacher.toString());
+			System.out.println(teachers);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}finally {
+			
+		}
+		
 	}
 	
 	@Test
 	public void springMybatisTest() throws Exception {
 		String springmybatisbeans = "applicationContext.xml";
+		@SuppressWarnings("resource")
 		ApplicationContext applicationContext = new ClassPathXmlApplicationContext(springmybatisbeans);
 		TeacherMapper teacherMapper = (TeacherMapper) applicationContext.getBean("teacherMapper");
 //		List<Teacher> teachers = teacherMapper.findAll();

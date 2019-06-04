@@ -23,8 +23,8 @@
 	</plugins>
 	
 	<!-- 扫描mapper.xml -->
-	<mappers>
+	<!-- <mappers>
 		<package name="cn.edu.ahut.teamwork.mapper"/>
-	</mappers>
+	</mappers> -->
 
 </configuration>

@@ -37,7 +37,8 @@
 		//默认加载第一页
 		var pagenum = 1;
 		//第一步：填充班级学生的信息到学生信息面板
-		ajaxstudents(courseid,pagenum);
+		//ajaxstudents(courseid,pagenum);
+		ajaxstudentcoursestudents(courseid);
 		//第二步：填充分组信息到学生分组信息面板courseid,group
 		ajaxcourse(courseid);
 		//第三步：填充班级项目信息
@@ -45,6 +46,25 @@
 		//第四步：填充队伍列表
 		getteams(courseid);
 	});
+	
+	//ajax查询学生和班级学生信息
+	function ajaxstudentcoursestudents(courseid) {
+		$.ajax({
+			type:"post",
+			dataType:"json",
+			data:{courseid:courseid},
+			//url:"/teamwork/student/findStudentByCourseidPageHelper",
+			url:"/teamwork/studentcoursestudent/findstudentcoursestudentbycourseid",
+			success:function(data){
+				console.log("findstudentcoursestudentbycourseid  success!!");
+				//打印学生信息分数等信息
+				displaystudentcoursestudent(data.studentCoursestudents);
+			},
+			error:function(data){
+				console.log("error"+data);
+			}
+		});
+	}
 	
 	//ajax查询学生信息
 	function ajaxstudents(courseid,pagenum) {
@@ -158,9 +178,55 @@
 		});
 	}
 	
+	//展示学生-课程学生信息，信息填充
+	function displaystudentcoursestudent(studentCoursestudents){
+		//填充前先清空
+		$("#students_table tbody").empty();
+		$.each(studentCoursestudents,function(index,studentCoursestudent){
+			//信息中的学生信息
+			var studentid = $("<td></td>").append(studentCoursestudent.student.id);
+			var studentname = $("<td></td>").append(studentCoursestudent.student.name);
+			var studentsex = $("<td></td>").append(studentCoursestudent.student.sex);
+			var studentclassname = $("<td></td>").append(studentCoursestudent.student.classname);
+			//信息中班级学生信息
+			if (studentCoursestudent.coursestudent.personscore == null || studentCoursestudent.coursestudent.personscore == "") {
+				var personscore = $("<td></td>").append("\\");
+			}else{
+				var personscore = $("<td></td>").append(studentCoursestudent.coursestudent.personscore);
+			}
+			if (studentCoursestudent.coursestudent.teamscore == null || studentCoursestudent.coursestudent.teamscore == "") {
+				var teamscore = $("<td></td>").append("\\");
+			} else {
+				var teamscore = $("<td></td>").append(studentCoursestudent.coursestudent.teamscore);
+			}
+			if (studentCoursestudent.coursestudent.score == null || studentCoursestudent.coursestudent.score == "") {
+				var score = $("<td></td>").append("\\");
+			} else {
+				var score = $("<td></td>").append(studentCoursestudent.coursestudent.score);
+				if (studentCoursestudent.coursestudent.score < 60) {
+					score.attr({"style":"background-color: #ffaeae;"})
+				}
+			}
+			var checkbtn = $("<td></td>")
+				.append("<input id=\""+studentCoursestudent.student.id+"\" type=\"button\" class=\"btn brn-default\" style=\"padding: 3px 12px;\" value=\"查看\" onclick=\"toCourseStudentAssignment('"+<%=request.getAttribute("courseid")%>+"','"+studentCoursestudent.student.id+"')\">")
+				.attr("title","学生在班级内的任务");
+			$("<tr></tr>").append(studentid)
+				.append(studentname)
+				.append(studentsex)
+				.append(studentclassname)
+				.append(personscore)
+				.append(teamscore)
+				.append(score)
+				.append(checkbtn)
+				.appendTo("#students_table tbody");
+		});
+	}
+	
 	//表格展示学生信息，信息填充函数
 	function displaydata(data) {
 		var students = data;
+		//填充前先清空
+		$("#students_table tbody").empty();
 		$.each(students,function(index,student){
 			var studentid = $("<td></td>").append(student.id);
 			var studentname = $("<td></td>").append(student.name);
@@ -703,6 +769,9 @@
 												<th>姓名</th>
 												<th>性别</th>
 												<th>班级</th>
+												<th>个人分</th>
+												<th>团队分</th>
+												<th>折算分</th>
 												<th>操作</th>
 											</tr>
 										</thead>

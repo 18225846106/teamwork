@@ -16,6 +16,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.github.pagehelper.PageInfo;
 
+import cn.edu.ahut.teamwork.entity.Student;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(locations= {"classpath:applicationContext.xml","classpath:dispatcherServlet-servlet.xml"})
@@ -37,7 +39,8 @@ public class MvcTest {
 	public void page() throws Exception {
 		MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/springtest").param("page", "1")).andReturn();
 		MockHttpServletRequest request = mvcResult.getRequest();
-		PageInfo pageInfo = (PageInfo)request.getAttribute("pageInfo");
+		@SuppressWarnings("unchecked")
+		PageInfo<Student> pageInfo = (PageInfo<Student>)request.getAttribute("pageInfo");
 		System.out.println(pageInfo.getPageNum());
 	}
 }

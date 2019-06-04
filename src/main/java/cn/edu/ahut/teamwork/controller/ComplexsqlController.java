@@ -156,7 +156,9 @@ public class ComplexsqlController {
 				} else {
 					//调用排序函数对列表重新排序
 					Map<String, Object> resultmap = teamWorkUtils.sortStudentsm(count,students);
+					@SuppressWarnings("unchecked")
 					List<Student> sList = (List<Student>) resultmap.get("students");
+					@SuppressWarnings("unchecked")
 					List<Integer> index = (List<Integer>) resultmap.get("index");
 					//切换id时用到的下标
 					int num = 0;
