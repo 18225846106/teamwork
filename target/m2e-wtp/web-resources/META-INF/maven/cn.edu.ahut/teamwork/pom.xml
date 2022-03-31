@@ -13,7 +13,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<spring-webmvc.version>5.1.0.RELEASE</spring-webmvc.version>
+		<spring-webmvc.version>5.3.18</spring-webmvc.version>
 		<spring-jdbc.version>5.1.0.RELEASE</spring-jdbc.version>
 		<spring-aspects.version>5.1.0.RELEASE</spring-aspects.version>
 		<spring-test.version>5.1.0.RELEASE</spring-test.version>
